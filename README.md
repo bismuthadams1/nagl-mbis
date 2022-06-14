@@ -44,8 +44,8 @@ from openff.toolkit.topology import Molecule
 # create ethanol
 ethanol = Molecule.from_smiles("CCO")
 # predict the charges (in e) and atomic volumes in (bohr ^3)
-charges = charge_model.compute_properties()["mbis-charges"]
-volumes = volume_model.compute_properties()["mbis-volumes"]
+charges = charge_model.compute_properties(ethanol)["mbis-charges"]
+volumes = volume_model.compute_properties(ethanol)["mbis-volumes"]
 ```
 
 # Models
