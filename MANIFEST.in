@@ -1,0 +1,8 @@
+# Include the READMEs
+include *.md
+# Include the license
+include LICENSE.txt
+include setup.py
+
+graft naglmbis
+global-exclude *.py[cod] __pycache__ *.so
