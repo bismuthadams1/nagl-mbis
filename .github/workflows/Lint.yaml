@@ -31,4 +31,4 @@ jobs:
       - name: Run black
         shell: bash
         run: |
-          black qubekit --check
+          black naglmbis --check

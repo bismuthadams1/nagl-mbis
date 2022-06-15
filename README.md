@@ -8,7 +8,7 @@ package by SimonBoothroyd.
 The required dependencies to run these models can be installed using ``conda``:
 
 ```bash
-conda install -c conda-forge -c dglteam nagl "gdl >=0.7" openff-toolkit pytorch-lightning
+conda install -c conda-forge -c dglteam nagl "dgl >=0.7" openff-toolkit pytorch-lightning
 ```
 
 You will then need to install this package from source, first clone the repository from github:
