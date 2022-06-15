@@ -8,7 +8,7 @@ package by SimonBoothroyd.
 The required dependencies to run these models can be installed using ``conda``:
 
 ```bash
-conda install -c conda-forge -c dglteam nagl "gdl >=0.7" openff-toolkit pytorch-lightning
+conda install -c conda-forge -c dglteam nagl "dgl >=0.7" openff-toolkit pytorch-lightning qubekit
 ```
 
 You will then need to install this package from source, first clone the repository from github:
@@ -46,6 +46,22 @@ ethanol = Molecule.from_smiles("CCO")
 # predict the charges (in e) and atomic volumes in (bohr ^3)
 charges = charge_model.compute_properties(ethanol)["mbis-charges"]
 volumes = volume_model.compute_properties(ethanol)["mbis-volumes"]
+```
+
+Alternatively we provide an openff-toolkit parameter handler plugin which allows you to create an openmm system
+using the normal python pathway with a modified force field which requests that the ``NAGMBIS`` model be used to 
+predict charges and LJ parameters. We provide a function which can modify any offxml to add the custom handler
+
+```python
+from naglmbis.plugins import modify_force_field
+from openff.toolkit.topology import Molecule
+
+nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
+# write out the force field to file
+nagl_sage.to_file("nagl_sage.offxml")
+# or use it to create an openmm system
+methanol = Molecule.from_smiles("CO")
+openmm_system = nagl_sage.create_openmm_system(topology=methanol.to_topology())
 ```
 
 # Models
