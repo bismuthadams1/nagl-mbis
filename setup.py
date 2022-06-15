@@ -43,6 +43,10 @@ setup(
 
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=[] + pytest_runner,
-
+    entry_points={
+        "openff.toolkit.plugins.handlers": [
+            "NAGLMBIS = naglmbis.plugins:NAGLMBISHandler"
+        ]
+    },
     # Set up the main CLI entry points
 )
