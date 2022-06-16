@@ -58,6 +58,10 @@ class NAGLMBISHandler(_NonbondedHandler):
             mbis_volumes = volume_model.compute_properties(molecule=ref_mol)[
                 "mbis-volumes"
             ].detach()
+            # qubekit assumes conformers so make one if there are non
+            if ref_mol.n_conformers == 0:
+                ref_mol.generate_conformers(n_conformers=1)
+
             qb_mol = Ligand.from_rdkit(ref_mol.to_rdkit())
             # fix the charges and volumes
             for i in range(qb_mol.n_atoms):
