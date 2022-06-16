@@ -1,3 +1,4 @@
+import pytest
 from openmm import unit
 
 from naglmbis.plugins import modify_force_field
@@ -63,3 +64,19 @@ def test_plugin_methanol(methanol):
         assert charge / unit.elementary_charge == refs[0]
         assert sigma / unit.nanometers == refs[1]
         assert epsilon / unit.kilojoule_per_mole == refs[2]
+
+
+def test_plugin_missing_element(iodobezene):
+    """Make sure an error is raised when we try to parameterize a molecule with an element not covered by model 1."""
+    from qubekit.utils.exceptions import MissingRfreeError
+
+    nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
+    with pytest.raises(MissingRfreeError):
+        _ = nagl_sage.create_openmm_system(topology=iodobezene.to_topology())
+
+
+def test_plugin_no_conformer(methane_no_conf):
+    """Make sure the system can still be made if the refernce molecule has no conformer"""
+
+    nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
+    _ = nagl_sage.create_openmm_system(topology=methane_no_conf.to_topology())

@@ -2,7 +2,6 @@ from typing import List, Optional
 
 import torch
 from nagl.features import AtomFeature, one_hot_encode
-
 # from nagl.resonance import enumerate_resonance_forms
 # from nagl.utilities.toolkits import normalize_molecule
 from openeye import oechem
