@@ -18,3 +18,17 @@ def water():
     water = Molecule.from_mapped_smiles("[H:2][O:1][H:3]")
     water.generate_conformers(n_conformers=1)
     return water
+
+
+@pytest.fixture()
+def iodobezene():
+    """Make an OpenFF molecule of iodobenzene"""
+    i_ben = Molecule.from_smiles("c1ccc(cc1)I")
+    i_ben.generate_conformers(n_conformers=1)
+    return i_ben
+
+
+@pytest.fixture()
+def methane_no_conf():
+    """Make an OpenFF molecule of methane with no conformer"""
+    return Molecule.from_smiles("C")

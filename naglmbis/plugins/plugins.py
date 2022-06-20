@@ -51,6 +51,14 @@ class NAGLMBISHandler(_NonbondedHandler):
             if self.check_charges_assigned(ref_mol, topology):
                 continue
 
+            # qubekit assumes conformers so make one if there are non
+            if ref_mol.n_conformers == 0:
+                ref_mol.generate_conformers(n_conformers=1)
+
+            qb_mol = Ligand.from_rdkit(ref_mol.to_rdkit())
+            # before we run make sure we have enough Rfree terms to run
+            lj.check_element_coverage(molecule=qb_mol)
+
             # predict the mbis charges and volumes
             mbis_charges = charge_model.compute_properties(molecule=ref_mol)[
                 "mbis-charges"
@@ -58,7 +66,7 @@ class NAGLMBISHandler(_NonbondedHandler):
             mbis_volumes = volume_model.compute_properties(molecule=ref_mol)[
                 "mbis-volumes"
             ].detach()
-            qb_mol = Ligand.from_rdkit(ref_mol.to_rdkit())
+
             # fix the charges and volumes
             for i in range(qb_mol.n_atoms):
                 qb_mol.atoms[i].aim.charge = float(mbis_charges[i][0])
