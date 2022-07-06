@@ -11,7 +11,7 @@ package by SimonBoothroyd.
 The required dependencies to run these models can be installed using ``conda``:
 
 ```bash
-conda install -c conda-forge -c dglteam -c openeye nagl "dgl >=0.7" openff-toolkit pytorch-lightning qubekit openeye-toolkits
+conda install -c conda-forge -c dglteam -c openeye nagl "dgl >=0.7" openff-toolkit pytorch-lightning qubekit
 ```
 
 You will then need to install this package from source, first clone the repository from github:
