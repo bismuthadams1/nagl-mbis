@@ -61,7 +61,7 @@ def test_plugin_methanol(methanol):
         charge, sigma, epsilon = methanol_forces[
             "NonbondedForce"
         ].getParticleParameters(particle_index)
-        assert charge / unit.elementary_charge == refs[0]
+        assert charge / unit.elementary_charge == pytest.approx(refs[0])
         assert sigma / unit.nanometers == pytest.approx(refs[1])
         assert epsilon / unit.kilojoule_per_mole == pytest.approx(refs[2])
 
