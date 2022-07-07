@@ -2,10 +2,11 @@ from typing import List, Optional
 
 import torch
 from nagl.features import AtomFeature, one_hot_encode
+from openff.toolkit.topology import Molecule
+
 # from nagl.resonance import enumerate_resonance_forms
 # from nagl.utilities.toolkits import normalize_molecule
-from openeye import oechem
-from openff.toolkit.topology import Molecule
+from rdkit import Chem
 
 # class AtomAverageFormalCharge(AtomFeature):
 #     def __call__(self, molecule: "Molecule") -> torch.Tensor:
@@ -80,13 +81,13 @@ class AtomInRingOfSize(AtomFeature):
         self.ring_size = ring_size
 
     def __call__(self, molecule: "Molecule") -> torch.Tensor:
-        oe_molecule: oechem.OEMol = molecule.to_openeye()
-        oechem.OEFindRingAtomsAndBonds(oe_molecule)
+        rd_molecule: Chem.Mol = molecule.to_rdkit()
+        ring_info: Chem.RingInfo = rd_molecule.GetRingInfo()
 
         return torch.tensor(
             [
-                int(oechem.OEAtomIsInRingSize(oe_atom, self.ring_size))
-                for oe_atom in oe_molecule.GetAtoms()
+                int(ring_info.IsAtomInRingOfSize(atom.GetIdx(), self.ring_size))
+                for atom in rd_molecule.GetAtoms()
             ]
         ).reshape(-1, 1)
 
@@ -100,23 +101,23 @@ class BondInRingOfSize(AtomFeature):
         self.ring_size = ring_size
 
     def __call__(self, molecule: "Molecule") -> torch.Tensor:
-        oe_molecule: oechem.OEMol = molecule.to_openeye()
-        oechem.OEFindRingAtomsAndBonds(oe_molecule)
+        rd_molecule: Chem.Mol = molecule.to_rdkit()
+        ring_info: Chem.RingInfo = rd_molecule.GetRingInfo()
 
-        oe_bond_by_index = {
-            tuple(sorted((oe_bond.GetBgnIdx(), oe_bond.GetEndIdx()))): oe_bond
-            for oe_bond in oe_molecule.GetBonds()
+        rd_bond_by_index = {
+            tuple(sorted((rd_bond.GetBgnIdx(), rd_bond.GetEndIdx()))): rd_bond
+            for rd_bond in rd_molecule.GetBonds()
         }
 
-        oe_bonds = [
-            oe_bond_by_index[tuple(sorted((bond.atom1_index, bond.atom2_index)))]
+        rd_bonds = [
+            rd_bond_by_index[tuple(sorted((bond.atom1_index, bond.atom2_index)))]
             for bond in molecule.bonds
         ]
 
         return torch.tensor(
             [
-                int(oechem.OEBondIsInRingSize(oe_bond, self.ring_size))
-                for oe_bond in oe_bonds
+                int(ring_info.IsBondInRingOfSize(rd_bond, self.ring_size))
+                for rd_bond in rd_bonds
             ]
         ).reshape(-1, 1)
 
