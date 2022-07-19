@@ -1,8 +1,20 @@
 from typing import Literal
 
-from nagl.features import AtomConnectivity, AtomicElement
+from nagl.features import (
+    AtomConnectivity,
+    AtomFormalCharge,
+    AtomicElement,
+    AtomIsAromatic,
+)
 
-from naglmbis.features.atom import AtomInRingOfSize
+from naglmbis.features.atom import (
+    AtomicMass,
+    AtomInRingOfSize,
+    ExplicitValence,
+    Hybridization,
+    TotalDegree,
+    TotalValence,
+)
 from naglmbis.models.base_model import MBISGraphModel
 from naglmbis.utils import get_model_weights
 
@@ -20,6 +32,30 @@ class MBISGraphModelV1(MBISGraphModel):
             AtomInRingOfSize(4),
             AtomInRingOfSize(5),
             AtomInRingOfSize(6),
+        ]
+        bond_features = []
+        return atom_features, bond_features
+
+
+class EspalomaModel(MBISGraphModel):
+    """Try and recreate the espaloma model"""
+
+    def features(self):
+        atom_features = [
+            AtomicElement(["H", "C", "N", "O", "F", "Cl", "Br", "S", "P"]),
+            TotalDegree(),
+            TotalValence(),
+            ExplicitValence(),
+            AtomFormalCharge(),
+            AtomIsAromatic(),
+            AtomicMass(),
+            AtomInRingOfSize(3),
+            AtomInRingOfSize(4),
+            AtomInRingOfSize(5),
+            AtomInRingOfSize(6),
+            AtomInRingOfSize(7),
+            AtomInRingOfSize(8),
+            Hybridization(),
         ]
         bond_features = []
         return atom_features, bond_features

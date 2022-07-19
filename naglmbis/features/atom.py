@@ -284,3 +284,74 @@ class AtomicPolarisability(AtomFeature):
         return torch.Tensor(
             [self._polarisability[atom.atomic_number] for atom in molecule.atoms]
         ).reshape(-1, 1)
+
+
+class Hybridization(AtomFeature):
+    """
+    one hot encode the rdkit hybridization of the atom.
+    """
+
+    _HYBRIDIZATION = [
+        Chem.rdchem.HybridizationType.SP,
+        Chem.rdchem.HybridizationType.SP2,
+        Chem.rdchem.HybridizationType.SP3,
+        Chem.rdchem.HybridizationType.SP3D,
+        Chem.rdchem.HybridizationType.SP3D2,
+        Chem.rdchem.HybridizationType.S,
+    ]
+
+    def __init__(self, hybridization: Optional[List[int]] = None) -> None:
+        self.hybridization = (
+            hybridization if hybridization is not None else [*self._HYBRIDIZATION]
+        )
+
+    def __len__(self):
+        return len(self._HYBRIDIZATION)
+
+    def __call__(self, molecule: Molecule, *args, **kwargs):
+        return torch.vstack(
+            [
+                one_hot_encode(atom.GetHybridization(), self.hybridization)
+                for atom in molecule.to_rdkit().GetAtoms()
+            ]
+        )
+
+
+class TotalValence(AtomFeature):
+    def __len__(self):
+        return 1
+
+    def __call__(self, molecule: Molecule, *args, **kwargs):
+        return torch.Tensor(
+            [[atom.GetTotalValence()] for atom in molecule.to_rdkit().GetAtoms()]
+        )
+
+
+class ExplicitValence(AtomFeature):
+    def __len__(self):
+        return 1
+
+    def __call__(self, molecule: Molecule, *args, **kwargs):
+        return torch.Tensor(
+            [[atom.GetExplicitValence()] for atom in molecule.to_rdkit().GetAtoms()]
+        )
+
+
+class AtomicMass(AtomFeature):
+    def __len__(self):
+        return 1
+
+    def __call__(self, molecule: Molecule, *args, **kwargs):
+        return torch.Tensor(
+            [[atom.GetMass()] for atom in molecule.to_rdkit().GetAtoms()]
+        )
+
+
+class TotalDegree(AtomFeature):
+    def __len__(self):
+        return 1
+
+    def __call__(self, molecule: Molecule, *args, **kwargs):
+        return torch.Tensor(
+            [[atom.GetTotalDegree()] for atom in molecule.to_rdkit().GetAtoms()]
+        )

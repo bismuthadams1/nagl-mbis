@@ -1,12 +1,18 @@
 import numpy as np
+from nagl.features import AtomConnectivity
 
 from naglmbis.features.atom import (
+    AtomicMass,
     AtomicPolarisability,
+    ExplicitValence,
+    Hybridization,
     HydrogenAtoms,
     LipinskiAcceptor,
     LipinskiDonor,
     PaulingElectronegativity,
     SandersonElectronegativity,
+    TotalDegree,
+    TotalValence,
     vdWRadius,
 )
 
@@ -82,3 +88,62 @@ def test_polarisability(methanol):
     feats = polar(methanol).numpy()
     assert feats.shape == (6, 1)
     assert np.allclose(feats, np.array([[1.76], [1.1], [0.67], [0.67], [0.67], [0.67]]))
+
+
+def test_hybridization(methanol):
+
+    hybrid = Hybridization()
+    assert len(hybrid) == 6
+    feats = hybrid(methanol).numpy()
+    assert feats.shape == (6, 6)
+    assert np.allclose(
+        feats,
+        np.array(
+            [
+                [0, 0, 1, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1],
+            ]
+        ),
+    )
+
+
+def test_total_valence(methanol):
+
+    val = TotalValence()
+    assert len(val) == 1
+    feats = val(methanol).numpy()
+    assert feats.shape == (6, 1)
+    assert np.allclose(feats, np.array([[4], [2], [1], [1], [1], [1]]))
+
+
+def test_explicit_valence(methanol):
+
+    exp = ExplicitValence()
+    assert len(exp) == 1
+    feats = exp(methanol).numpy()
+    assert feats.shape == (6, 1)
+    assert np.allclose(feats, np.array([[4], [2], [1], [1], [1], [1]]))
+
+
+def test_mass(methanol):
+
+    mass = AtomicMass()
+    assert len(mass) == 1
+    feats = mass(methanol).numpy()
+    assert feats.shape == (6, 1)
+    assert np.allclose(
+        feats, np.array([[12.011], [15.999], [1.008], [1.008], [1.008], [1.008]])
+    )
+
+
+def test_degree(methanol):
+
+    degree = TotalDegree()
+    assert len(degree) == 1
+    feats = degree(methanol).numpy()
+    assert feats.shape == (6, 1)
+    assert np.allclose(feats, np.array([[4], [2], [1], [1], [1], [1]]))

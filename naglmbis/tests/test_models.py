@@ -2,6 +2,7 @@ import pytest
 import torch
 
 from naglmbis.models import load_charge_model, load_volume_model
+from naglmbis.models.models import EspalomaModel
 
 
 def test_charge_model_v1(methanol):
