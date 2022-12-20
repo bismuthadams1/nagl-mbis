@@ -30,6 +30,9 @@ class NAGLMBISHandler(_NonbondedHandler):
     _KWARGS = []
     charge_model = ParameterAttribute(default=1, converter=_allow_only([1]))
     volume_model = ParameterAttribute(default=1, converter=_allow_only([1]))
+    rfree_model = ParameterAttribute(
+        default=1, converter=_allow_only(list(trained_models.keys()))
+    )
 
     def check_handler_compatibility(self, handler_kwargs):
         """We do not want to be mixed with AM1 handler as this is not compatible."""
@@ -40,7 +43,7 @@ class NAGLMBISHandler(_NonbondedHandler):
         charge_model = load_charge_model(charge_model=self.charge_model)
         volume_model = load_volume_model(volume_model=self.volume_model)
         # the volume and charge models are tied to the trained model
-        lj = trained_models[self.volume_model]
+        lj = trained_models[self.rfree_model]
 
         force = super().create_force(system, topology, **kwargs)
 
