@@ -1,7 +1,7 @@
 # models for the nagl run
 
 import abc
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 import torch
 from nagl.lightning import DGLMoleculeLightningModel
@@ -28,11 +28,17 @@ class MBISGraphModel(DGLMoleculeLightningModel):
         n_mbis_layers: int,
         readout_modules: List[Literal["charge", "volume"]],
         learning_rate: float,
+        gcn_activation: Optional[
+            str
+        ] = None,  # in the case of SAGEConv no activation is used
+        readout_activation: str = "ReLU",  # defaults for backwards compatibility
     ):
         self.n_gcn_hidden_features = n_gcn_hidden_features
         self.n_gcn_layers = n_gcn_layers
         self.n_mbis_hidden_features = n_mbis_hidden_features
         self.n_mbis_layers = n_mbis_layers
+        self.gcn_activation = gcn_activation
+        self.readout_activation = readout_activation
         n_atom_features = sum(len(feature) for feature in self.features()[0])
         readout = {}
         if "charge" in readout_modules:
@@ -41,7 +47,7 @@ class MBISGraphModel(DGLMoleculeLightningModel):
                 readout_layers=SequentialLayers(
                     in_feats=n_gcn_hidden_features,
                     hidden_feats=[n_mbis_hidden_features] * n_mbis_layers + [2],
-                    activation=["ReLU"] * n_mbis_layers + ["Identity"],
+                    activation=[readout_activation] * n_mbis_layers + ["Identity"],
                 ),
                 postprocess_layer=ComputePartialCharges(),
             )
@@ -51,7 +57,7 @@ class MBISGraphModel(DGLMoleculeLightningModel):
                 readout_layers=SequentialLayers(
                     in_feats=n_gcn_hidden_features,
                     hidden_feats=[n_mbis_hidden_features] * n_mbis_layers + [1],
-                    activation=["ReLU"] * n_mbis_layers + ["Identity"],
+                    activation=[readout_activation] * n_mbis_layers + ["Identity"],
                 ),
             )
 
@@ -60,6 +66,9 @@ class MBISGraphModel(DGLMoleculeLightningModel):
                 architecture="SAGEConv",
                 in_feats=n_atom_features,
                 hidden_feats=[n_gcn_hidden_features] * n_gcn_layers,
+                activation=[gcn_activation] * n_gcn_layers
+                if gcn_activation is not None
+                else None,
             ),
             readout_modules=readout,
             learning_rate=learning_rate,
