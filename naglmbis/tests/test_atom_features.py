@@ -82,7 +82,6 @@ def test_vdw_radii(methanol):
 
 
 def test_polarisability(methanol):
-
     polar = AtomicPolarisability()
     assert len(polar) == 1
     feats = polar(methanol).numpy()
@@ -91,7 +90,6 @@ def test_polarisability(methanol):
 
 
 def test_hybridization(methanol):
-
     hybrid = Hybridization()
     assert len(hybrid) == 6
     feats = hybrid(methanol).numpy()
@@ -112,7 +110,6 @@ def test_hybridization(methanol):
 
 
 def test_total_valence(methanol):
-
     val = TotalValence()
     assert len(val) == 1
     feats = val(methanol).numpy()
@@ -121,7 +118,6 @@ def test_total_valence(methanol):
 
 
 def test_explicit_valence(methanol):
-
     exp = ExplicitValence()
     assert len(exp) == 1
     feats = exp(methanol).numpy()
@@ -130,7 +126,6 @@ def test_explicit_valence(methanol):
 
 
 def test_mass(methanol):
-
     mass = AtomicMass()
     assert len(mass) == 1
     feats = mass(methanol).numpy()
@@ -141,7 +136,6 @@ def test_mass(methanol):
 
 
 def test_degree(methanol):
-
     degree = TotalDegree()
     assert len(degree) == 1
     feats = degree(methanol).numpy()

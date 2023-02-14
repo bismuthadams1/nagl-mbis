@@ -7,7 +7,7 @@ def test_charge_model_v1(methanol):
     """
     Test loading the charge model and computing the MBIS charges.
     """
-    charge_model = load_charge_model(charge_model=1)
+    charge_model = load_charge_model(charge_model="nagl-v1")
     charges = charge_model.compute_properties(molecule=methanol)[
         "mbis-charges"
     ].detach()
@@ -19,7 +19,7 @@ def test_volume_model_v1(methanol):
     """
     Test loading the volume model and computing the MBIS volumes
     """
-    volume_model = load_volume_model(volume_model=1)
+    volume_model = load_volume_model(volume_model="nagl-v1")
     volumes = volume_model.compute_properties(molecule=methanol)[
         "mbis-volumes"
     ].detach()

@@ -28,8 +28,12 @@ class NAGLMBISHandler(_NonbondedHandler):
         LibraryChargeHandler,
     ]  # we need to let waters be handled by libray charges first
     _KWARGS = []
-    charge_model = ParameterAttribute(default=1, converter=_allow_only([1]))
-    volume_model = ParameterAttribute(default=1, converter=_allow_only([1]))
+    charge_model = ParameterAttribute(
+        default="nagl-v1", converter=_allow_only(["nagl-v1", "espaloma-v1"])
+    )
+    volume_model = ParameterAttribute(
+        default="nagl-v1", converter=_allow_only(["nagl-v1"])
+    )
     rfree_model = ParameterAttribute(
         default=1, converter=_allow_only(list(trained_models.keys()))
     )
@@ -39,8 +43,17 @@ class NAGLMBISHandler(_NonbondedHandler):
         pass
 
     def create_force(self, system, topology, **kwargs):
+        if "nagl" in self.charge_model:
+            charge_model = load_charge_model(charge_model=self.charge_model)
+        elif "espaloma" in self.charge_model:
+            from espaloma_charge import charge
 
-        charge_model = load_charge_model(charge_model=self.charge_model)
+            charge_model = charge
+        else:
+            raise NotImplementedError(
+                "Only NAGL and Esaploma type models are supported!"
+            )
+
         volume_model = load_volume_model(volume_model=self.volume_model)
         # the volume and charge models are tied to the trained model
         lj = trained_models[self.rfree_model]
@@ -48,7 +61,6 @@ class NAGLMBISHandler(_NonbondedHandler):
         force = super().create_force(system, topology, **kwargs)
 
         for ref_mol in topology.reference_molecules:
-
             # If the molecule has charges then we should skip the molecule
             # this should let us skip water as it has lib charges
             if self.check_charges_assigned(ref_mol, topology):
@@ -63,9 +75,13 @@ class NAGLMBISHandler(_NonbondedHandler):
             lj.check_element_coverage(molecule=qb_mol)
 
             # predict the mbis charges and volumes
-            mbis_charges = charge_model.compute_properties(molecule=ref_mol)[
-                "mbis-charges"
-            ].detach()
+            if "nagl" in self.charge_model:
+                mbis_charges = charge_model.compute_properties(molecule=ref_mol)[
+                    "mbis-charges"
+                ].detach()
+            elif "espaloma" in self.charge_model:
+                mbis_charges = charge_model(ref_mol.to_rdkit())
+                mbis_charges = mbis_charges.reshape((ref_mol.n_atoms, 1))
             mbis_volumes = volume_model.compute_properties(molecule=ref_mol)[
                 "mbis-volumes"
             ].detach()

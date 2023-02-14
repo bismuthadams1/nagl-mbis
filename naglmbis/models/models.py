@@ -61,10 +61,14 @@ class EspalomaModel(MBISGraphModel):
         return atom_features, bond_features
 
 
-charge_weights = {1: {"path": "mbis_charges_v1.ckpt", "model": MBISGraphModelV1}}
-volume_weights = {1: {"path": "mbis_volumes_v1.ckpt", "model": MBISGraphModelV1}}
-CHARGE_MODELS = Literal[1]
-VOLUME_MODELS = Literal[1]
+charge_weights = {
+    "nagl-v1": {"path": "mbis_charges_v1.ckpt", "model": MBISGraphModelV1}
+}
+volume_weights = {
+    "nagl-v1": {"path": "mbis_volumes_v1.ckpt", "model": MBISGraphModelV1}
+}
+CHARGE_MODELS = Literal["nagl-v1"]
+VOLUME_MODELS = Literal["nagl-v1"]
 
 
 def load_charge_model(charge_model: CHARGE_MODELS) -> MBISGraphModel:

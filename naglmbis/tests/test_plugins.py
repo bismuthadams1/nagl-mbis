@@ -80,3 +80,40 @@ def test_plugin_no_conformer(methane_no_conf):
 
     nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
     _ = nagl_sage.create_openmm_system(topology=methane_no_conf.to_topology())
+
+
+def test_espaloma_charge(methanol, tmpdir):
+    """
+    Test using the esploma charge module to compute the charges for a model.
+    """
+
+    with tmpdir.as_cwd():
+        nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
+        nagl_handler = nagl_sage.get_parameter_handler("NAGLMBIS")
+        nagl_handler.charge_model = "espaloma-v1"
+        methanol_system = nagl_sage.create_openmm_system(
+            topology=methanol.to_topology()
+        )
+        methanol_forces = {
+            methanol_system.getForce(
+                index
+            ).__class__.__name__: methanol_system.getForce(index)
+            for index in range(methanol_system.getNumForces())
+        }
+        # check the system parameters
+        ref_parameters = {
+            # index: [charge, sigma, epsilon]
+            0: [0.114912, 0.3506905398376649, 0.29246740950730743],
+            1: [-0.604643, 0.30824716826324094, 0.42874612945325397],
+            2: [0.030345, 0.23126852234757847, 0.07259909774155628],
+            3: [0.030345, 0.23126852234757847, 0.07259909774155628],
+            4: [0.030345, 0.23126852234757847, 0.07259909774155628],
+            5: [0.398696, 0.11098246898497655, 0.41631660852994784],
+        }
+        for particle_index, refs in ref_parameters.items():
+            charge, sigma, epsilon = methanol_forces[
+                "NonbondedForce"
+            ].getParticleParameters(particle_index)
+            assert charge / unit.elementary_charge == pytest.approx(refs[0], abs=1e-5)
+            assert sigma / unit.nanometers == pytest.approx(refs[1])
+            assert epsilon / unit.kilojoule_per_mole == pytest.approx(refs[2])

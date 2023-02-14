@@ -44,5 +44,42 @@ model_v1_mixture = LennardJones612(
     beta=0.487,
 )
 
+# A model optimised with Mixture properties against tip4p-fb using espaloma-charge-0.0.8
+model_v1_espaloma_mixture = LennardJones612(
+    free_parameters={
+        "H": h_base(r_free=1.925),
+        "C": c_base(r_free=2.013),
+        "N": n_base(r_free=1.807),
+        "O": o_base(r_free=1.537),
+        "X": h_base(r_free=1.256),
+        "Cl": cl_base(r_free=1.866),
+        "S": s_base(r_free=1.812),
+        "F": f_base(r_free=1.627),
+        "Br": br_base(r_free=1.969),
+    },
+    alpha=1.2,
+    beta=0.502,
+)
 
-trained_models = {1: model_v1, 2: model_v1_mixture}
+model_v2_espaloma_mixture_no_polar_h = LennardJones612(
+    free_parameters={
+        "H": h_base(r_free=1.868),
+        "C": c_base(r_free=2.022),
+        "N": n_base(r_free=1.835),
+        "O": o_base(r_free=1.603),
+        "Cl": cl_base(r_free=1.846),
+        "S": s_base(r_free=1.810),
+        "F": f_base(r_free=1.566),
+        "Br": br_base(r_free=1.930),
+    },
+    lj_on_polar_h=False,
+    alpha=1.129,
+    beta=0.555,
+)
+
+trained_models = {
+    1: model_v1,
+    2: model_v1_mixture,
+    "espaloma-v1": model_v1_espaloma_mixture,
+    "espaloma-v2": model_v2_espaloma_mixture_no_polar_h,
+}
