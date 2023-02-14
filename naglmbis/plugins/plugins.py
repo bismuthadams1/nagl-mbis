@@ -14,6 +14,8 @@ from qubekit.molecules import Ligand
 
 from naglmbis.models import load_charge_model, load_volume_model
 from naglmbis.plugins.trained_models import trained_models
+from naglmbis.plugins.bccs import load_bcc_model, bcc_force_fields
+from openmm import unit
 
 
 class NAGLMBISHandler(_NonbondedHandler):
@@ -37,6 +39,9 @@ class NAGLMBISHandler(_NonbondedHandler):
     rfree_model = ParameterAttribute(
         default=1, converter=_allow_only(list(trained_models.keys()))
     )
+    bcc_model = ParameterAttribute(
+        default=None, converter=_allow_only(list(bcc_force_fields.keys()) + [None])
+    )
 
     def check_handler_compatibility(self, handler_kwargs):
         """We do not want to be mixed with AM1 handler as this is not compatible."""
@@ -53,6 +58,9 @@ class NAGLMBISHandler(_NonbondedHandler):
             raise NotImplementedError(
                 "Only NAGL and Esaploma type models are supported!"
             )
+        bcc_model = None
+        if self.bcc_model is not None:
+            bcc_model = load_bcc_model(self.bcc_model)
 
         volume_model = load_volume_model(volume_model=self.volume_model)
         # the volume and charge models are tied to the trained model
@@ -74,11 +82,14 @@ class NAGLMBISHandler(_NonbondedHandler):
             # before we run make sure we have enough Rfree terms to run
             lj.check_element_coverage(molecule=qb_mol)
 
+            bcc_matches = None
             # predict the mbis charges and volumes
             if "nagl" in self.charge_model:
                 mbis_charges = charge_model.compute_properties(molecule=ref_mol)[
                     "mbis-charges"
                 ].detach()
+                if bcc_model is not None:
+                    bcc_matches = bcc_model.find_matches(ref_mol.to_topology())
             elif "espaloma" in self.charge_model:
                 mbis_charges = charge_model(ref_mol.to_rdkit())
                 mbis_charges = mbis_charges.reshape((ref_mol.n_atoms, 1))
@@ -90,7 +101,24 @@ class NAGLMBISHandler(_NonbondedHandler):
             for i in range(qb_mol.n_atoms):
                 qb_mol.atoms[i].aim.charge = float(mbis_charges[i][0])
                 qb_mol.atoms[i].aim.volume = float(mbis_volumes[i][0])
-            # apply charge and volume symmetry
+            # check for bccs and transfer charges
+            if bcc_matches is not None:
+                # the matches have been sorted so we need to use
+                # the environment match to ensure we get the correct atoms
+                for match in bcc_matches.values():
+                    (
+                        charge_added_atom,
+                        charge_subtracted_atom,
+                    ) = match.environment_match.topology_atom_indices
+                    charge_correction = (
+                        match.parameter_type.charge_correction.value_in_unit(
+                            unit.elementary_charge
+                        )
+                    )
+                    qb_mol.atoms[charge_added_atom].aim.charge += charge_correction
+                    qb_mol.atoms[charge_subtracted_atom].aim.charge -= charge_correction
+
+            # apply charge and volume symmetry probably handled by the GNN but apply to be sure
             MBISCharges.apply_symmetrisation(qb_mol)
             # update nonbonded params with aim values and fix net charge
             for i in range(qb_mol.n_atoms):
