@@ -1,6 +1,6 @@
 # a file to track bcc models
-from typing_extensions import Literal
 from openff.toolkit.typing.engines.smirnoff import ForceField
+from typing_extensions import Literal
 
 # Model fit with nagl-v1 charges and nagl-v1 volumes with no polar h Rfree
 # list of smirks and charge corrections

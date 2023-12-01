@@ -9,7 +9,7 @@ def methanol():
     """
     methanol = Molecule.from_mapped_smiles("[H:3][C:1]([H:4])([H:5])[O:2][H:6]")
     methanol.generate_conformers(n_conformers=1)
-    return methanol
+    return methanol.to_rdkit()
 
 
 @pytest.fixture()
@@ -17,7 +17,7 @@ def water():
     """Make an OpenFF molecule of water"""
     water = Molecule.from_mapped_smiles("[H:2][O:1][H:3]")
     water.generate_conformers(n_conformers=1)
-    return water
+    return water.to_rdkit()
 
 
 @pytest.fixture()
@@ -25,10 +25,10 @@ def iodobezene():
     """Make an OpenFF molecule of iodobenzene"""
     i_ben = Molecule.from_smiles("c1ccc(cc1)I")
     i_ben.generate_conformers(n_conformers=1)
-    return i_ben
+    return i_ben.to_rdkit()
 
 
 @pytest.fixture()
 def methane_no_conf():
     """Make an OpenFF molecule of methane with no conformer"""
-    return Molecule.from_smiles("C")
+    return Molecule.from_smiles("C").to_rdkit()

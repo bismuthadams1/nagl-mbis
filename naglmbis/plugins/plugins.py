@@ -9,13 +9,13 @@ from openff.toolkit.typing.engines.smirnoff.parameters import (
     _allow_only,
     _NonbondedHandler,
 )
+from openmm import unit
 from qubekit.charges import MBISCharges
 from qubekit.molecules import Ligand
 
 from naglmbis.models import load_charge_model, load_volume_model
+from naglmbis.plugins.bccs import bcc_force_fields, load_bcc_model
 from naglmbis.plugins.trained_models import trained_models
-from naglmbis.plugins.bccs import load_bcc_model, bcc_force_fields
-from openmm import unit
 
 
 class NAGLMBISHandler(_NonbondedHandler):

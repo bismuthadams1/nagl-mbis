@@ -1,7 +1,6 @@
 import numpy as np
-from nagl.features import AtomConnectivity
 
-from naglmbis.features.atom import (
+from naglmbis.features import (
     AtomicMass,
     AtomicPolarisability,
     ExplicitValence,
@@ -13,7 +12,7 @@ from naglmbis.features.atom import (
     SandersonElectronegativity,
     TotalDegree,
     TotalValence,
-    vdWRadius,
+    VDWRadius,
 )
 
 
@@ -74,7 +73,7 @@ def test_sanderson(methanol):
 def test_vdw_radii(methanol):
     """Make sure the vdw radii is correctly assigned"""
 
-    radii = vdWRadius()
+    radii = VDWRadius()
     assert len(radii) == 1
     feats = radii(methanol).numpy()
     assert feats.shape == (6, 1)

@@ -19,11 +19,11 @@ jobs:
       matrix:
         cfg:
           - conda-env: env
-            python-version: 3.8
+            python-version: 3.11
             os: ubuntu-latest
 
           - conda-env: env
-            python-version: 3.8
+            python-version: 3.11
             os: macOS-latest
 
     env:
@@ -42,18 +42,10 @@ jobs:
           ulimit -a
 
       - name: Create Environment
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: mamba-org/setup-micromamba@v1
         with:
-          activate-environment: test
           environment-file: devtools/conda-envs/${{ matrix.cfg.conda-env }}.yaml
-          python-version: ${{ matrix.cfg.python-version }}
-          auto-update-conda: true
-          auto-activate-base: false
-          show-channel-urls: true
-          mamba-version: "*"
-          miniforge-version: latest
-          miniforge-variant: Mambaforge
-          use-mamba: true
+          create-args: python=${{ matrix.python-version }}
 
       - name: Environment Information
         shell: bash -l {0}
@@ -64,12 +56,12 @@ jobs:
       - name: Install NAGL-MBIS
         shell: bash -l {0}
         run: |
-          python setup.py develop --no-deps
+          pip install -e . --no-build-isolation 
 
       - name: PyTest
         shell: bash -l {0}
         run: |
-          pytest -v --cov=naglmbis --cov-config=setup.cfg naglmbis/tests/ --cov-report=xml
+          pytest -v --cov=naglmbis --cov-config=pyproject.toml naglmbis/tests/ --cov-report=xml --color=yes
 
       - name: Codecov
         uses: codecov/codecov-action@v1
