@@ -16,7 +16,7 @@ class MBISGraphModel(DGLMoleculeLightningModel):
 
         return self.forward(dgl_molecule)
 
-    def compute_latent_space(self, molecule: Chem.Mol) -> DGLMolecule:
+    def return_dgl_molecule(self, molecule: Chem.Mol) -> DGLMolecule:
 
         return DGLMolecule.from_rdkit(
             molecule, self.config.model.atom_features, self.config.model.bond_features
