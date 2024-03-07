@@ -1,0 +1,2 @@
+[openff.toolkit.plugins.handlers]
+NAGLMBIS = naglmbis.plugins:NAGLMBISHandler
