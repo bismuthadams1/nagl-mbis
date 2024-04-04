@@ -3,7 +3,7 @@ import torch
 from openff.toolkit.topology import Molecule
 import rdkit
 from rdkit import Chem
-from pyCheckmol import CheckMol
+# from pyCheckmol import CheckMol
 
 def get_latent_embedding(smiles: str,
                          charge_model: MBISGraphModel) -> tuple[torch.Tensor,rdkit.Chem]:
@@ -102,6 +102,30 @@ def find_functional_groups(smiles: str) -> dict[str,tuple[tuple[int]]]:
     --------
     dictionary: list[str]
         list of functional groups
-    index 
-    
+
     """
+
+
+"""
+from rdkit import Chem
+
+mol =  Chem.MolFromSmiles(smi)
+
+# Iterate over the atoms
+for i, atom in enumerate(mol.GetAtoms()):
+    # For each atom, set the property "molAtomMapNumber" to a custom number, let's say, the index of the atom in the molecule
+    atom.SetProp("molAtomMapNumber", str(atom.GetIdx()+1))
+mol
+
+#we know there is a thiohemiaminal
+substructure_smiles = 'CC1NCCS1'
+substructure = Chem.MolFromSmarts(substructure_smiles)
+#get the substructure locations
+mol.GetSubstructMatches(substructure)
+
+Chem.MolFromSmiles('CC(=NN)C')
+
+Chem.MolFromSmiles('CC(=NN((C=O)N(C)C)C)C')
+
+
+"""
