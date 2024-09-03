@@ -21,19 +21,6 @@ esp_calculator = ESPCalculator()
 
 client = PortalClient("api.qcarchive.molssi.org")
 data_set = client.get_dataset(dataset_type='singlepoint',dataset_name='MLPepper RECAP Optimized Fragments v1.0')
-# finished_records = [record for record in data_set.iterate_records(status='complete')]
-
-# finished_records_mini = []
-# for idx,record in enumerate(data_set.iterate_records(status='complete')):
-#     finished_records_mini.append(record)
-    # if idx > 4:
-    #     break
-
-# #produce records dict for reference
-# records_dict = OrderedDict()
-# for _, _, singlepoint in finished_records_mini:
-#     id = singlepoint.id
-#     records_dict[id] = singlepoint
     
 #grid settings assigned here
 grid_settings =  LatticeGridSettings(
@@ -54,14 +41,12 @@ def create_parquet_dataset(
     coloumn_names = ["smiles", "conformation", "dipole", "mbis-charges", "mbis-dipoles", "mbis-quadrupoles","inv_distance","esp"]
     #dictionary to store the results
     results = defaultdict(list)
-    # keep track of the number of total entries, this is each conformation expanded as a unique training point
-    # total_records = 0
+    #dictionary to store info from the same conformers
     recordscache = defaultdict(list)    
     cached_smiles = None
-    for index,(key, smiles) in tqdm(enumerate(zip(dataset_keys, dataset_smiles))):
+    for index,(key, smiles) in tqdm(enumerate(zip(dataset_keys, dataset_smiles)),total=len(dataset_smiles)):
         #write in batches
             if index > 0:
-                # print(recordscache)              
                 prev_smiles = dataset_smiles[index - 1]
                 if smiles != prev_smiles:
                     # Finalize the cache for the previous smiles
@@ -74,9 +59,7 @@ def create_parquet_dataset(
                     # Reset cache for the new smiles
                     recordscache = defaultdict(list)
             if (singlepoint_record := client.get_records(record_ids=key)):
-                # singlepoint_record = client.get_records(record_ids=key).error
-                # if singlepoint_record is None:
-                #     logging.info(f'no single point record found with id {key}')
+
                 group_smiles = singlepoint_record.molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
                 assert group_smiles == smiles
                 cached_smiles = group_smiles
