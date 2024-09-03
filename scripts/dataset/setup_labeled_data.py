@@ -140,7 +140,7 @@ def create_pyarrowrquet_dataset(
     # print(results)
     
     # rows = get_rows(dictionary=results, dataset_length=dataset_length)
-    print(results.values())
+    # print(results.values())
     batches = get_batches(results, chunk_size=3, schema=schema)
 
     with pyarrow.parquet.ParquetWriter(where = pyarrowrquet_name, schema= schema) as writer:
