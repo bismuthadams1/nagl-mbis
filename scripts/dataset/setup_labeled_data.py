@@ -114,7 +114,8 @@ def create_pyarrowrquet_dataset(
                 grid_coordinates = grid_coords.reshape((-1, 3)).to(unit.bohr)
                 atom_coordinates = conformation.reshape((-1, 3)).to(unit.bohr)
                 displacement = grid_coordinates[:, None, :] - atom_coordinates[None, :, :]
-                inv_displacement = 1/displacement
+                distance = np.linalg.norm(displacement.m, axis=-1) * unit.bohr
+                inv_displacement = 1/distance
                 recordscache["inv_distance"].append(inv_displacement.m.flatten().tolist())
                 
                 esp, _ = esp_calculator.assign_esp(
