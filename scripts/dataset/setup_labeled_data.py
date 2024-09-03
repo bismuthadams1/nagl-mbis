@@ -111,9 +111,6 @@ def create_parquet_dataset(
     # results_df = pd.DataFrame.from_dict(results, orient='index')
     # results_df = results_df.transpose()
     # results_df.to_csv('results.csv')
-    
-    # if write_batch % 1000 != 0:
-    #     write_batch = 1000
 
     columns = [results[label] for label in coloumn_names]
     table = pyarrow.table(columns, coloumn_names)
