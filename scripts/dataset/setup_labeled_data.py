@@ -1,21 +1,21 @@
 import h5py
 import pyarrow 
-import pyarrow.pyarrowrquet
 from openff.units import unit
 from collections import defaultdict, OrderedDict
 import deepchem as dc
 import numpy as np
 import typing
 from openff.recharge.grids import GridGenerator, GridSettingsType, LatticeGridSettings
+import pyarrow.parquet
 from build_multipoles import ESPCalculator
 from qcportal import PortalClient
 from qcportal.dataset_models import BaseDataset
 from qcportal.singlepoint import SinglepointRecord
 from openff.toolkit.topology import Molecule
-import pyarrowndas as pd
 import logging
 from tqdm import tqdm
-from memory_profiler import profile
+# from memory_profiler import profile
+import pandas as pd
 import polars 
 import itertools
 
@@ -29,25 +29,36 @@ data_set = client.get_dataset(dataset_type='singlepoint',dataset_name='MLPepper 
 grid_settings =  LatticeGridSettings(
     type="fcc", spyarrowcing=0.5, inner_vdw_scale=1.4, outer_vdw_scale=2.0
 )
-@profile
+# @profile
 def build_grid(molecule: Molecule, conformer: unit.Quantity, grid_settings: GridSettingsType) -> unit.Quantity:
     grid = GridGenerator.generate(molecule, conformer, grid_settings)
     return grid
 
 #create the pyarrowrquet dataset
-@profile
+# @profile
 def create_pyarrowrquet_dataset(
     pyarrowrquet_name: str,
     deep_chem_dataset: dc.data.DiskDataset,
-    client: dict[int,SinglepointRecord],
+    reference_dataset: PortalClient,
 ):
     dataset_keys = deep_chem_dataset.X
     dataset_smiles = deep_chem_dataset.ids
     coloumn_names = ["smiles", "conformation", "dipole", "mbis-charges", "mbis-dipoles", "mbis-quadrupoles","inv_distance","esp"]
+    schema = pyarrow.schema([
+        pyarrow.field('smiles', pyarrow.string()),  
+        pyarrow.field('conformation', pyarrow.list_(pyarrow.float64())),  
+        pyarrow.field('dipole', pyarrow.list_(pyarrow.float64())),  
+        pyarrow.field('charges', pyarrow.list_(pyarrow.float64())),  
+        pyarrow.field('mbis-dipoles', pyarrow.list_(pyarrow.float64())),  
+        pyarrow.field('mbis-quadrupoles', pyarrow.list_(pyarrow.float64())), 
+        pyarrow.field('inv_distance', pyarrow.list_(pyarrow.float64())),  
+        pyarrow.field('esp', pyarrow.list_(pyarrow.float64())),  
+])
     #dictionary to store the results
     results = defaultdict(list)
     #dictionary to store info from the same conformers
     recordscache = defaultdict(list)    
+    #length of dataset, compressing the duplicate smiles
     total_length = len(set(dataset_smiles))
     cached_smiles = None
     for index,(key, smiles) in tqdm(enumerate(zip(dataset_keys, dataset_smiles)),total=len(dataset_smiles)):
@@ -60,10 +71,15 @@ def create_pyarrowrquet_dataset(
                         results['smiles'].append(cached_smiles)
                         for column, values in recordscache.items():
                             # print(values)
-                            results[column].append(values)
+                            flattened_values = [item for sublist in values for item in sublist]
+                            results[column].append(flattened_values)
+                            # results[column].append(values)
                         # total_records += 1
                     # Reset cache for the new smiles
                     recordscache = defaultdict(list)
+            #### ARTIFICIALLY SHORTEN FOR TESTING###
+            # if index == 10:
+            #     break
             if (singlepoint_record := client.get_records(record_ids=key)):
 
                 group_smiles = singlepoint_record.molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
@@ -118,71 +134,42 @@ def create_pyarrowrquet_dataset(
     # results_df = results_df.transpose()
     # results_df.to_csv('results.csv')
 
-    coloumn_names = ["smiles", "conformation", "dipole", "mbis-charges", "mbis-dipoles", "mbis-quadrupoles","inv_distance","esp"]
 
-    columns = [results[label] for label in coloumn_names]
-    polars_df = polars.from_dict(results)
+    # columns = [results[label] for label in coloumn_names]
+    # polars_df = polars.from_dict(results)
+    # print(results)
     
-    with pyarrow.pyarrowrquet.pyarrowrquetWriter(name = pyarrowrquet_name, schema= coloumn_names) as writer:
-        
+    # rows = get_rows(dictionary=results, dataset_length=dataset_length)
+    print(results.values())
+    batches = get_batches(results, chunk_size=3, schema=schema)
+
+    with pyarrow.parquet.ParquetWriter(where = pyarrowrquet_name, schema= schema) as writer:
+        for batch in batches:
+            writer.write(batch)
+            
     return results
 
-def get_rows(ordered_dict  , dataset_length):
-    for key, values in yield_ordered_dict_items(ordered_dict):
-      yield {
-            'smiles': values[0],  # Adjust according to actual data
-            'conformation': values[1],  # Adjust according to actual data
-            'dipole': values[2],  # Adjust according to actual data
-            'mbis-charges': values[3],  # Adjust according to actual data
-            'mbis-dipoles': values[4],  # Adjust according to actual data
-            'mbis-quadrupoles': values[5],  # Adjust according to actual data
-            'inv_distance': values[6],  # Adjust according to actual data
-            'esp': values[7]  # Adjust according to actual data
-        }
-
-# Define the schema for the pyarrowrquet file
-schema = pyarrow.schema([
-    pyarrow.field('smiles', pyarrow.string()),  # SMILES notation as string
-    pyarrow.field('conformation', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('dipole', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('mbis-charges', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('mbis-dipoles', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('mbis-quadrupoles', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('inv_distance', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-    pyarrow.field('esp', pyarrow.list_(pyarrow.float64())),  # Flattened list of floats
-])
 
 
-# Generator function to yield items from OrderedDict
-def yield_ordered_dict_items(ordered_dict):
-    for key, values in ordered_dict.items():
-        yield key, values
-        
-# def get_batches(rows_iterable, chunk_size, schema ):
-#     rows_it = iter(rows_iterable)
-#     while True:
-#         batch = pyarrow.RecordBatch(
-#             pd.DataFrame(itertools.islice(rows_it, chunk_size), columns=schema.names)
-#         )
-        
-# pyarrow.schema(
-    
-    
-# )
+def get_batches(dictionary, chunk_size, schema ):
+    for start in range(0, len(dictionary['smiles']), chunk_size):
+        end = min(start + chunk_size, len(dictionary['smiles']))
+        batch_data = {col: dictionary[col][start:end] for col in schema.names}
+        # print('batch_data')
+        # print(batch_data)
+        batch = pyarrow.RecordBatch.from_pandas(pd.DataFrame(batch_data), schema=schema, preserve_index=False)
+        yield batch
 
-
-
-
-table = pyarrow.table(columns, coloumn_names)
-pyarrow.pyarrowrquet.write_table(table, pyarrowrquet_name)
+# table = pyarrow.table(columns, coloumn_names)
+# pyarrow.pyarrowrquet.write_table(table, pyarrowrquet_name)
 
 
 for file_name, dataset_name in [
-    ("training.pyarrowrquet", "maxmin-train"),
-    ("validation.pyarrowrquet", "maxmin-valid"),
-    ("testing.pyarrowrquet", "maxmin-test"),
+    ("training.parquet", "maxmin-train"),
+    ("validation.parquet", "maxmin-valid"),
+    ("testing.parquet", "maxmin-test"),
 ]:
-    print("creating pyarrowrquet for ", dataset_name)
+    print("creating parquet for ", dataset_name)
     dc_dataset = dc.data.DiskDataset(dataset_name)
     create_pyarrowrquet_dataset(
         pyarrowrquet_name=file_name,
