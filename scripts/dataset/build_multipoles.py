@@ -1,8 +1,10 @@
 import numpy as np
 from openff.units import unit
+from memory_profiler import profile
 
 AU_ESP = unit.atomic_unit_of_energy / unit.elementary_charge
 
+@profile
 class ESPCalculator:
     def __init__(self):
         self.ke = 1 / (4 * np.pi * unit.epsilon_0)  # 1/vacuum_permittivity, 1/(e**2 * a0 *Eh)
