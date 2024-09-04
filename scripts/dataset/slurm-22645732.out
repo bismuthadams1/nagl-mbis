@@ -1,4 +1,0 @@
-  File "/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/setup_labeled_data.py", line 29
-    def build_grid(molecule: Molecule, conformer: unit.Quantity, grid_settings: GridSettingsType) -> unit.Quantity:
-                           ^
-SyntaxError: invalid syntax

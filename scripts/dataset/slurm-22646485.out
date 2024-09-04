@@ -1,8 +1,0 @@
-  File "/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/split_by_deepchem.py", line 22
-    print(f"The total number of unique molecules {len(smiles_ids)}")
-                                                                  ^
-SyntaxError: invalid syntax
-  File "/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/setup_labeled_data.py", line 33
-    def build_grid(molecule: Molecule, conformer: unit.Quantity, grid_settings: GridSettingsType) -> unit.Quantity:
-                           ^
-SyntaxError: invalid syntax
