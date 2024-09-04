@@ -4,13 +4,15 @@ import numpy as np
 from qcportal import PortalClient
 
 client = PortalClient("api.qcarchive.molssi.org")
+print('getting dataset')
 data_set = client.get_dataset(dataset_type='singlepoint',dataset_name='MLPepper RECAP Optimized Fragments v1.0')
-finished_records = [record for record in data_set.iterate_records(status='complete')]
+print('getting finished records')
+# finished_records = [record for record in data_set.iterate_records(status='complete')]
 
 dataset_keys = []
 smiles_ids = []
 
-for _, _, singlepoint in finished_records:
+for _, _, singlepoint in data_set.iterate_records(status='complete'):
     if 'ddx' in singlepoint.specification.keywords:
         continue
     smiles = singlepoint.molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
