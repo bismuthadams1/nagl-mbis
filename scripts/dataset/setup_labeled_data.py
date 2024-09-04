@@ -69,13 +69,20 @@ def create_pyarrowrquet_dataset(
                             flat_dict[column].append(flattened_values)
                         flat_dict['smiles'].append(str(cached_smiles))
                         batch = get_batch(dictionary = flat_dict, schema= schema)
-                        
-                        table_original_file = pyarrow.parquet.read_table(source=pyarrowrquet_name,  pre_buffer=False, use_threads=True, memory_map=True)  # Use memory map for speed.
-                        table_to_append = batch.cast(table_original_file.schema)  # Attempt to cast new schema to existing, e.g. datetime64[ns] to datetime64[us] (may throw otherwise).
+                        try:
+                            table_original_file = pyarrow.parquet.read_table(source=pyarrowrquet_name,  pre_buffer=False, use_threads=True, memory_map=True)  # Use memory map for speed.
+                            table_to_append = batch.cast(table_original_file.schema)  # Attempt to cast new schema to existing, e.g. datetime64[ns] to datetime64[us] (may throw otherwise).
+                        except Exception as e:
+                            print('need to create parquet first')
+                            table_original_file = None
+                      
                         with pyarrow.parquet.ParquetWriter(where = pyarrowrquet_name, schema= schema) as writer:
-                            writer.write(table_original_file)
-                            writer.write(table_to_append)
-             
+                            if table_original_file:
+                                writer.write(table_original_file)
+                                writer.write(table_to_append)
+                            else:
+                                writer.write(batch)
+                
                     recordscache = defaultdict(list)
             #### ARTIFICIALLY SHORTEN FOR TESTING###
             # if index == 10:
