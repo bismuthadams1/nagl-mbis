@@ -53,7 +53,8 @@ def create_pyarrowrquet_dataset(
     recordscache = defaultdict(list)    
     #length of dataset, compressing the duplicate smiles
     cached_smiles = None
-    for index,(key, smiles) in tqdm(enumerate(zip(dataset_keys, dataset_smiles)),total=len(dataset_smiles)):
+    #WARNING PATCHED THE START TO LAST FAILURE
+    for index,(key, smiles) in tqdm(enumerate(zip(dataset_keys, dataset_smiles), start= 0),total=len(dataset_smiles)):
         #write in batches
             if index > 0:
                 #this is to test to see if we have more than 1 conformer
@@ -68,8 +69,12 @@ def create_pyarrowrquet_dataset(
                             flat_dict[column].append(flattened_values)
                         flat_dict['smiles'].append(str(cached_smiles))
                         batch = get_batch(dictionary = flat_dict, schema= schema)
+                        
+                        table_original_file = pyarrow.parquet.read_table(source=pyarrowrquet_name,  pre_buffer=False, use_threads=True, memory_map=True)  # Use memory map for speed.
+                        table_to_append = batch.cast(table_original_file.schema)  # Attempt to cast new schema to existing, e.g. datetime64[ns] to datetime64[us] (may throw otherwise).
                         with pyarrow.parquet.ParquetWriter(where = pyarrowrquet_name, schema= schema) as writer:
-                            writer.write(batch)
+                            writer.write(table_original_file)
+                            writer.write(table_to_append)
              
                     recordscache = defaultdict(list)
             #### ARTIFICIALLY SHORTEN FOR TESTING###
@@ -126,7 +131,7 @@ def get_batch(dictionary, schema):
     batch = pyarrow.RecordBatch.from_pandas(pd.DataFrame(dictionary), schema=schema, preserve_index=False)
     return batch
 
-for file_name, dataset_name in [
+for file_name, dataset_name in [  #("training.parquet", "maxmin-train")
     ("training.parquet", "maxmin-train"),
     ("validation.parquet", "maxmin-valid"),
     ("testing.parquet", "maxmin-test"),
@@ -136,7 +141,7 @@ for file_name, dataset_name in [
     create_pyarrowrquet_dataset(
         pyarrowrquet_name=file_name,
         deep_chem_dataset=dc_dataset,
-        reference_dataset=data_set,
+        reference_dataset=client,
     )
 
 
