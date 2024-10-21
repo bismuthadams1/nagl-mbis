@@ -8,11 +8,25 @@ from naglmbis.utils import get_model_weights
 charge_weights = {
     "nagl-v1-mbis": {"checkpoint_path": "nagl-v1-mbis.ckpt"},
     "nagl-v1-mbis-dipole": {"checkpoint_path": "nagl-v1-mbis-dipole.ckpt"},
+    "nagl-gas-charge-wb": {"checkpoint_path" : "nagl-gas-charge.ckpt"},
+    "nagl-gas-dipole-wb": {"checkpoint_path" : "nagl-gas-charge-dipole.ckpt"},
+    "nagl-water-charge-wb":  {"checkpoint_path" : "nagl-water-charge.ckpt"},
+    "nagl-water-charge-dipole-wb":  {"checkpoint_path" : "nagl-water-charge-dipole.ckpt"},
+    "nagl-gas-esp-wb-2A": {"checkpoint_path":"nagl-gas-esp-2A.ckpt"},
+    "nagl-gas-esp-wb-15A":{"checkpoint_path": "nagl-gas-esp-15A.ckpt"},
 }
 # volume_weights = {
 #     "nagl-v1": {"path": "mbis_volumes_v1.ckpt", "model": MBISGraphModel}
 # }
-CHARGE_MODELS = Literal["nagl-v1-mbis-dipole", "nagl-v1-mbis"]
+CHARGE_MODELS = Literal["nagl-v1-mbis-dipole",
+                        "nagl-v1-mbis",
+                        "nagl-gas-wb",
+                        "nagl-gas-dipole-wb",
+                        "nagl-water-charge-wb",
+                        "nagl-water-charge-dipole-wb",
+                        "nagl-gas-esp-wb-2A",
+                        "nagl-gas-esp-wb-15A",
+                        ]
 # VOLUME_MODELS = Literal["nagl-v1"]
 
 
