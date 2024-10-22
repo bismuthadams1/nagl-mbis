@@ -27,14 +27,35 @@ class ComputePartialPolarised:
     def __init__(self,
                  model_gas: MBISGraphModel,
                  model_water: MBISGraphModel,
-                 dialetric_constant: float):
+                 alpha: float =  0.5):
+        """
+        Parameters
+        ----------
+        model_gas: MBISGraphModel
+            loaded graph model for the gas phase charges
+        model_water: MBISGraphModel
+            loaded graph model for the water based charges
+        alpha: float
+            weighting constant to weight each model
+        """
         
         self.model_gas = model_gas
         self.model_water = model_water
-        self.dialetric_constant = dialetric_constant
+        self.alpha = alpha
         
     def compute_polarised_charges(self, molecule: Chem.Mol) -> torch.Tensor:
+        """Compute polarized charges based on an openff molecule input
         
+        Parameters
+        ----------
+        molecule: Chem.Mol
+            openff molecule to calculate the charges for
+        
+        Returns
+        -------
+        torch.Tensor
+            weighted average partial charges
+        """
         gas_charges = self.model_gas.compute_properties(
             molecule=molecule
         )["mbis-charges"]
@@ -43,9 +64,6 @@ class ComputePartialPolarised:
             molecule=molecule
         )["mbis-charges"]
         
-        return (
-            (water_charges - gas_charges)/
-            DIALETRIC_CONSTANT_WATER
-            )*self.dialetric_constant + gas_charges  
+        return self.alpha * gas_charges + (1-self.alpha) * water_charges
         
         
