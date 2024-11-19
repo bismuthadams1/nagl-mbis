@@ -39,7 +39,7 @@ def load_charge_model(charge_model: CHARGE_MODELS) -> MBISGraphModel:
     weight_path = get_model_weights(
         model_type="charge", model_name=charge_weights[charge_model]["checkpoint_path"]
     )
-    model_data = torch.load(weight_path)
+    model_data = torch.load(weight_path, map_location=torch.device('cpu'))
     model = MBISGraphModel(**model_data["hyper_parameters"])
     model.load_state_dict(model_data["state_dict"])
     model.eval()
