@@ -21,7 +21,6 @@ class MBISGraphModel(DGLMoleculeLightningModel):
 
         return DGLMolecule.from_rdkit(
             molecule, self.config.model.atom_features, self.config.model.bond_features
-<<<<<<< HEAD
         )
 class ComputePartialPolarised:
     "Compute the partially polarized properties based on a supplied dialetric constant"
@@ -68,6 +67,3 @@ class ComputePartialPolarised:
         return self.alpha * gas_charges + (1-self.alpha) * water_charges
         
         
-=======
-        )
->>>>>>> 99f689272f18e4cbc592c3319fa961c34fd4079e
