@@ -5,8 +5,6 @@ from nagl.molecules import DGLMolecule
 from nagl.training import DGLMoleculeLightningModel
 from rdkit import Chem
 
-DIALETRIC_CONSTANT_WATER = 78.4
-
 class MBISGraphModel(DGLMoleculeLightningModel):
     "A wrapper to make it easy to load and evaluate models"
 
@@ -23,7 +21,7 @@ class MBISGraphModel(DGLMoleculeLightningModel):
             molecule, self.config.model.atom_features, self.config.model.bond_features
         )
 class ComputePartialPolarised:
-    "Compute the partially polarized properties based on a supplied dialetric constant"
+    "Compute the partially polarized properties based on a supplied scaling constant"
     def __init__(self,
                  model_gas: MBISGraphModel,
                  model_water: MBISGraphModel,
@@ -64,6 +62,6 @@ class ComputePartialPolarised:
             molecule=molecule
         )["mbis-charges"]
         
-        return self.alpha * gas_charges + (1-self.alpha) * water_charges
+        return (1-self.alpha) * gas_charges + self.alpha * water_charges
         
         
