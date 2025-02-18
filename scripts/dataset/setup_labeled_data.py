@@ -6,6 +6,7 @@ Notes:
     - conformers for molecules are grouped together first
     - try and batch calls to qcarchive for faster processing
     - we use a processpool to speed up calls to qca and builidng the grids.
+<<<<<<< HEAD
 
 Two datasets can currently be accessed:
 
@@ -13,6 +14,8 @@ Two datasets can currently be accessed:
 ----------------------------  ----------
           wb97x-d/def2-tzvpp       68966
 wb97x-d/def2-tzvpp/ddx-water       68966
+=======
+>>>>>>> origin/main
 """
 import pyarrow 
 from openff.units import unit
@@ -53,14 +56,20 @@ def process_record(record, molecule, grid_settings: GridSettingsType) -> dict:
     #build the grid and inv the distance between the grid coords and points
     # build the molecule with its conformer attached
     openff_mol: Molecule = Molecule.from_qcschema(molecule, allow_undefined_stereo=True)
+<<<<<<< HEAD
     #The conformer is stored in angstrom
+=======
+>>>>>>> origin/main
     grid_coords = build_grid(molecule = openff_mol,
             conformer=openff_mol.conformers[0],
             grid_settings=grid_settings)
     
     #find the inv displacment between grid coords and esp
     grid_coordinates = grid_coords.reshape((-1, 3)).to(unit.bohr)
+<<<<<<< HEAD
     record_data["grid"] = grid_coordinates.m.flatten().tolist()
+=======
+>>>>>>> origin/main
     atom_coordinates = openff_mol.conformers[0].reshape((-1, 3)).to(unit.bohr)
     displacement = grid_coordinates[:, None, :] - atom_coordinates[None, :, :]
     distance = np.linalg.norm(displacement.m, axis=-1) * unit.bohr
@@ -75,11 +84,16 @@ def process_record(record, molecule, grid_settings: GridSettingsType) -> dict:
         grid=grid_coords,
         coordinates=openff_mol.conformers[0],
     )
+<<<<<<< HEAD
     record_data["esp"] = esp
+=======
+    record_data["esp"] = esp.tolist()
+>>>>>>> origin/main
     return record_data
 
 def main(output: str):
 
+<<<<<<< HEAD
     client = PortalClient("api.qcarchive.molssi.org", cache_dir=".")
     # allowing passing of datasets and features in a yaml file
     data_set = client.get_dataset(
@@ -134,5 +148,90 @@ if __name__ == "__main__":
     # main(output="./josh_set/mlpepper_gas_grid_esp.parquet")
     # main(output="./josh_set/15A_grid/mlpepper_water_grid_esp.parquet")
     main(output="./josh_set/1A_grid/mlpepper_gas_grid_esp.parquet")
+=======
+    # client = PortalClient("api.qcarchive.molssi.org")
+    # # allowing passing of datasets and features in a yaml file
+    # data_set = client.get_dataset(dataset_type='singlepoint',dataset_name='MLPepper RECAP Optimized Fragments v1.0')
+
+
+    # # allow grid settings to be defined in a yaml file
+    # grid_settings =  LatticeGridSettings(
+    #     type="fcc", spyarrowcing=0.5, inner_vdw_scale=1.4, outer_vdw_scale=2.0
+    # )
+    # rec_fn = partial(process_record, grid_settings=grid_settings)
+
+    # # set up the arrow table which we will write to
+    # schema = pyarrow.schema([
+    #         pyarrow.field('smiles', pyarrow.string()),  
+    #         pyarrow.field('dipole', pyarrow.list_(pyarrow.float64())), 
+    #         pyarrow.field('conformation', pyarrow.list_(pyarrow.float64())),   
+    #         pyarrow.field('mbis-charges', pyarrow.list_(pyarrow.float64())),  
+    #         pyarrow.field('mbis-dipoles', pyarrow.list_(pyarrow.float64())),  
+    #         pyarrow.field('mbis-quadrupoles', pyarrow.list_(pyarrow.float64())), 
+    #         pyarrow.field('inv_distance', pyarrow.list_(pyarrow.float64())),  
+    #         pyarrow.field('esp', pyarrow.list_(pyarrow.float64())),
+    #         pyarrow.field("record_id", pyarrow.int32())  ,
+    #         pyarrow.field('esp_length', pyarrow.int32())
+    #     ])
+    # entries = data_set.entry_names
+    # with pyarrow.parquet.ParquetWriter(where=output, schema=schema) as writer:
+         
+    #     with ProcessPoolExecutor(max_workers=8) as pool:
+    #         # process in 1000 batch chunks
+    #         for batch in batched(entries, 1000):
+    #             jobs = [
+    #                 pool.submit(rec_fn, record.dict(), record.molecule) for _, _, record in tqdm(data_set.iterate_records(specification_names=["wb97x-d/def2-tzvpp"], status="complete", entry_names=batch), desc="Building Job list", total=len(batch))
+    #             ]
+    #             for result in tqdm(as_completed(jobs), desc="Building local dataset ..."):
+    #                 rec_data = result.result()
+    #                 rec_batch = pyarrow.RecordBatch.from_pylist([rec_data,], schema=schema)
+    #                 writer.write_batch(rec_batch)
+    
+    #load up a lazy dataframe so commands to execute immediately and hit memory issues
+    table_to_group = pl.scan_parquet(output)#, low_memory= True)
+    #trying this with 22691763
+    # pl.Config.set_streaming_chunk_size(40)
+    # path = f'/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/sink_parquet/{output}'
+    path_2 = f'/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/sink_parquet_2/{output}'
+
+    #groupby_enq = 
+    # table_to_group.group_by("smiles", maintain_order=True).agg(
+    #     'dipole',
+    #     'conformation',
+    #     'mbis-charges',
+    #     'mbis-dipoles',
+    #     'mbis-quadrupoles',
+    #     'inv_distance',
+    #     'esp',
+    #     'record_id',
+    #     'esp_length'
+    # ).collect(streaming=True).write_parquet(path)
+    #Trying this with 22691765
+    table_to_group.map_batches(lambda df:
+        df.group_by("smiles", maintain_order=True).agg(
+        'dipole',
+        'conformation',
+        'mbis-charges',
+        'mbis-dipoles',
+        'mbis-quadrupoles',
+        'inv_distance',
+        'esp',
+        'record_id',
+        'esp_length'),
+        streamable = True,
+    ).sink_parquet(path_2)
+    
+    
+   
+    #turn on streaming to reduce memory consumption
+    # grouped_dataset = groupby_enq.collect(streaming=True)
+    # grouped_dataset.write_parquet(file = output)
+    # groupby_enq.sink_parquet(f'/mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/sink_parquet/{output}')
+    
+if __name__ == "__main__":
+    main(output="test.parquet")
+    # main(output="train.parquet")
+    # main(output="validation.parquet")
+>>>>>>> origin/main
 
 

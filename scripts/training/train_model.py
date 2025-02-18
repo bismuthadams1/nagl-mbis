@@ -87,7 +87,11 @@ def configure_model(
 def configure_data() -> DataConfig:
     return DataConfig(
         training=Dataset(
+<<<<<<< HEAD
             sources=["/home/localadmin/projects/nagl-mbis-release-for-training/nagl-mbis/scripts/datasets/testing.parquet"],
+=======
+            sources=["./testing.parquet"],
+>>>>>>> origin/main
             # The 'column' must match one of the label columns in the parquet
             # table that was create during stage 000.
             # The 'readout' column should correspond to one our or model readout
@@ -111,7 +115,11 @@ def configure_data() -> DataConfig:
             batch_size=250,
         ),
         validation=Dataset(
+<<<<<<< HEAD
             sources=["/home/localadmin/projects/nagl-mbis-release-for-training/nagl-mbis/scripts/datasets/validation.parquet"],
+=======
+            sources=["./validation.parquet"],
+>>>>>>> origin/main
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",
@@ -129,7 +137,11 @@ def configure_data() -> DataConfig:
             ],
         ),
         test=Dataset(
+<<<<<<< HEAD
             sources=["/home/localadmin/projects/nagl-mbis-release-for-training/nagl-mbis/scripts/datasets/testing.parquet"],
+=======
+            sources=["./testing.parquet"],
+>>>>>>> origin/main
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",

@@ -41,4 +41,8 @@ train, validation, test = max_min_split.train_valid_test_split(
 
 # train.to_csv('train_smiles.csv')
 # validation.to_csv('validation_smiles.csv')
+<<<<<<< HEAD
 # test.to_csv('test_smiles.csv')
+=======
+# test.to_csv('test_smiles.csv')
+>>>>>>> origin/main

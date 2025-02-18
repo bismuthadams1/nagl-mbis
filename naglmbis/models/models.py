@@ -8,11 +8,29 @@ from naglmbis.utils import get_model_weights
 charge_weights = {
     "nagl-v1-mbis": {"checkpoint_path": "nagl-v1-mbis.ckpt"},
     "nagl-v1-mbis-dipole": {"checkpoint_path": "nagl-v1-mbis-dipole.ckpt"},
+    "nagl-gas-charge-wb": {"checkpoint_path" : "nagl-gas-charge.ckpt"},
+    "nagl-gas-charge-dipole-wb": {"checkpoint_path" : "nagl-gas-charge-dipole.ckpt"},
+    "nagl-gas-charge-dipole-esp-wb-default":{"checkpoint_path":"nagl-gas-charge-dipole-esp.ckpt"},
+    "nagl-water-charge-wb":  {"checkpoint_path" : "nagl-water-charge.ckpt"},
+    "nagl-water-charge-dipole-wb":  {"checkpoint_path" : "nagl-water-charge-dipole.ckpt"},
+    "nagl-water-charge-dipole-esp-wb-default":{"checkpoint_path":"nagl-water-charge-dipole-esp.ckpt"},
+    "nagl-gas-esp-wb-2A": {"checkpoint_path":"nagl-gas-esp-2A.ckpt"},
+    "nagl-gas-esp-wb-15A":{"checkpoint_path": "nagl-gas-esp-15A.ckpt"},
 }
 # volume_weights = {
 #     "nagl-v1": {"path": "mbis_volumes_v1.ckpt", "model": MBISGraphModel}
 # }
-CHARGE_MODELS = Literal["nagl-v1-mbis-dipole", "nagl-v1-mbis"]
+CHARGE_MODELS = Literal["nagl-v1-mbis-dipole",
+                        "nagl-v1-mbis",
+                        "nagl-gas-charge-wb",
+                        "nagl-gas-charge-dipole-wb",
+                        "nagl-gas-charge-dipole-esp-wb-default"
+                        "nagl-water-charge-wb",
+                        "nagl-water-charge-dipole-wb",
+                        "nagl-water-charge-dipole-esp-wb-default",
+                        "nagl-gas-esp-wb-2A",
+                        "nagl-gas-esp-wb-15A",
+                        ]
 # VOLUME_MODELS = Literal["nagl-v1"]
 
 
@@ -23,7 +41,7 @@ def load_charge_model(charge_model: CHARGE_MODELS) -> MBISGraphModel:
     weight_path = get_model_weights(
         model_type="charge", model_name=charge_weights[charge_model]["checkpoint_path"]
     )
-    model_data = torch.load(weight_path)
+    model_data = torch.load(weight_path, map_location=torch.device('cpu'))
     model = MBISGraphModel(**model_data["hyper_parameters"])
     model.load_state_dict(model_data["state_dict"])
     model.eval()

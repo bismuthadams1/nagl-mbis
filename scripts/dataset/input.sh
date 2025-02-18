@@ -1,5 +1,6 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 #SBATCH --nodes 1
 #SBATCH -c 288
 #SBATCH --mem=0
@@ -14,3 +15,14 @@ source /home/mlpepper/${USER}/.bashrc
 # python ./setup_labeled_data.py > out.txt
 # micromamba run -n splitting_env python ./setup_labeled_data.py > out.txt
 micromamba run -n splitting_env python ./splitting.py > splitting.txt
+=======
+#SBATCH -A DCCADD
+#SBATCH --mail-type=ALL
+#SBATCH --export=ALL
+#SBATCH -c 8
+#SBATCH --mem=64gb
+
+export PYTHONUNBUFFERED=FALSE
+
+python /mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/setup_labeled_data.py > out.txt
+>>>>>>> origin/main

@@ -13,7 +13,11 @@ class ESPCalculator:
                    dipoles: np.ndarray, 
                    quadropules: np.ndarray, 
                    grid: unit.Quantity, 
+<<<<<<< HEAD
                    coordinates: unit.Quantity) -> np.array:
+=======
+                   coordinates: unit.Quantity) -> list:
+>>>>>>> origin/main
         """Assign charges according to charge model selected
 
         Parameters
@@ -34,15 +38,25 @@ class ESPCalculator:
         list of partial charges 
         """
         monopoles_quantity = monopoles * unit.e
+<<<<<<< HEAD
         dipoles_quantity = dipoles * unit.e*unit.bohr
         quadropoles_quantity = quadropules*unit.e*unit.bohr*unit.bohr
         coordinates_ang = coordinates.to(unit.bohr)
+=======
+        dipoles_quantity = dipoles * unit.e*unit.angstrom
+        quadropoles_quantity = quadropules*unit.e*unit.angstrom*unit.angstrom
+        coordinates_ang = coordinates.to(unit.angstrom)
+>>>>>>> origin/main
 
         monopole_esp = self._calculate_esp_monopole_au(grid_coordinates=grid, atom_coordinates=coordinates_ang, charges=monopoles_quantity)
         dipole_esp = self._calculate_esp_dipole_au(grid_coordinates=grid, atom_coordinates=coordinates_ang, dipoles=dipoles_quantity)
         quadrupole_esp = self._calculate_esp_quadropole_au(grid_coordinates=grid, atom_coordinates=coordinates_ang, quadrupoles=quadropoles_quantity)
 
+<<<<<<< HEAD
         return (monopole_esp + dipole_esp + quadrupole_esp).m.flatten()
+=======
+        return (monopole_esp + dipole_esp + quadrupole_esp).m.flatten().tolist(), grid.m.tolist()
+>>>>>>> origin/main
 
     def _calculate_esp_monopole_au(self, 
                                   grid_coordinates: unit.Quantity, 
@@ -162,4 +176,8 @@ class ESPCalculator:
             quadrupoles[i][1][1] -= trace
             quadrupoles[i][2][2] -= trace
 
+<<<<<<< HEAD
         return quadrupoles * unit.e * unit.bohr * unit.bohr
+=======
+        return quadrupoles * unit.e * unit.bohr * unit.bohr
+>>>>>>> origin/main

@@ -9,3 +9,10 @@ mlruns/
 *.log
 *.npy
 *.json
+*.pyc
+*.DS_STORE
+__pycache__/
+*.pyo
+build/
+dist/
+*.egg-info/
