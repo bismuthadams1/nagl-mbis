@@ -1,0 +1,129 @@
+config:
+  data:
+    test:
+      batch_size: null
+      sources:
+      - /projects/public/mlpepper/nagl_datasets/default_esp_grids/gas/testing_esp.parquet
+      targets:
+      - column: mbis-charges
+        denominator: 0.02
+        metric: rmse
+        readout: mbis-charges
+        weight: 1.0
+      - charge_label: mbis-charges
+        conformation_column: conformation
+        denominator: 0.04
+        dipole_column: dipole
+        metric: rmse
+        weight: 1.0
+      - charge_label: mbis-charges
+        denominator: 0.00159362
+        esp_column: esp
+        esp_length_column: esp_length
+        inv_distance_column: inv_distance
+        ke: 1.0
+        metric: rmse
+        weight: 1.0
+    training:
+      batch_size: 250
+      sources:
+      - /projects/public/mlpepper/nagl_datasets/default_esp_grids/gas/training_esp.parquet
+      targets:
+      - column: mbis-charges
+        denominator: 0.02
+        metric: rmse
+        readout: mbis-charges
+        weight: 1.0
+      - charge_label: mbis-charges
+        conformation_column: conformation
+        denominator: 0.04
+        dipole_column: dipole
+        metric: rmse
+        weight: 1.0
+      - charge_label: mbis-charges
+        denominator: 0.00159362
+        esp_column: esp
+        esp_length_column: esp_length
+        inv_distance_column: inv_distance
+        ke: 1.0
+        metric: rmse
+        weight: 1.0
+    validation:
+      batch_size: null
+      sources:
+      - /projects/public/mlpepper/nagl_datasets/default_esp_grids/gas/validation_esp.parquet
+      targets:
+      - column: mbis-charges
+        denominator: 0.02
+        metric: rmse
+        readout: mbis-charges
+        weight: 1.0
+      - charge_label: mbis-charges
+        conformation_column: conformation
+        denominator: 0.04
+        dipole_column: dipole
+        metric: rmse
+        weight: 1.0
+      - charge_label: mbis-charges
+        denominator: 0.00159362
+        esp_column: esp
+        esp_length_column: esp_length
+        inv_distance_column: inv_distance
+        ke: 1.0
+        metric: rmse
+        weight: 1.0
+  model:
+    atom_features:
+    - type: element
+      values:
+      - H
+      - B
+      - C
+      - N
+      - O
+      - F
+      - Si
+      - P
+      - S
+      - Cl
+      - Br
+    - type: connectivity
+      values:
+      - 1
+      - 2
+      - 3
+      - 4
+    - type: ringofsize
+    bond_features: []
+    convolution:
+      activation:
+      - ReLU
+      - ReLU
+      - ReLU
+      - ReLU
+      - ReLU
+      dropout: null
+      hidden_feats:
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      type: SAGEConv
+    readouts:
+      mbis-charges:
+        forward:
+          activation:
+          - ReLU
+          - ReLU
+          - Identity
+          dropout: null
+          hidden_feats:
+          - 64
+          - 64
+          - 2
+        pooling: atom
+        postprocess: charges
+  optimizer:
+    lr: 0.001
+    type: Adam

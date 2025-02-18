@@ -1,7 +1,11 @@
-__pycache__
+__pycache__/
 *.parquet
 *.ckpt
 *.sh
-*/mlruns/*
+mlruns/
 *.out
 *.sqlite
+*.csv
+*.log
+*.npy
+*.json

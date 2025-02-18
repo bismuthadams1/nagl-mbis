@@ -1,11 +1,16 @@
 #!/bin/bash
 
-#SBATCH -A DCCADD
-#SBATCH --mail-type=ALL
-#SBATCH --export=ALL
-#SBATCH -c 8
-#SBATCH --mem=64gb
+#SBATCH --nodes 1
+#SBATCH -c 288
+#SBATCH --mem=0
+#SBATCH --gres=gpu:4                      
+#SBATCH --time=2-00:00:00   # Set the time limit to one day
 
-export PYTHONUNBUFFERED=FALSE
+# # source ~/micromamba/bin/activate splitting_env
+source /home/mlpepper/${USER}/.bashrc
+# source activate splitting_env
+# export PYTHONUNBUFFERED=FALSE
 
-python /mnt/storage/nobackup/nca121/nagl-mbis/scripts/dataset/setup_labeled_data.py > out.txt
+# python ./setup_labeled_data.py > out.txt
+# micromamba run -n splitting_env python ./setup_labeled_data.py > out.txt
+micromamba run -n splitting_env python ./splitting.py > splitting.txt

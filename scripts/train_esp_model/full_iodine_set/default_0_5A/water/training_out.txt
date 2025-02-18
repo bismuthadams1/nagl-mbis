@@ -1,0 +1,36 @@
+{'ringofsize': <class '__main__.AtomInRingOfSize'>}
+Model DGLMoleculeLightningModel(
+  (convolution_module): SAGEConvStack(
+    (0): SAGEConv(
+      (feat_drop): Dropout(p=0.0, inplace=False)
+      (activation): ReLU()
+      (fc_neigh): Linear(in_features=22, out_features=128, bias=False)
+      (fc_self): Linear(in_features=22, out_features=128, bias=True)
+    )
+    (1-4): 4 x SAGEConv(
+      (feat_drop): Dropout(p=0.0, inplace=False)
+      (activation): ReLU()
+      (fc_neigh): Linear(in_features=128, out_features=128, bias=False)
+      (fc_self): Linear(in_features=128, out_features=128, bias=True)
+    )
+  )
+  (readout_modules): ModuleDict(
+    (mbis-charges): ReadoutModule(
+      (pooling_layer): AtomPoolingLayer()
+      (forward_layers): Sequential(
+        (0): Linear(in_features=128, out_features=64, bias=True)
+        (1): ReLU()
+        (2): Dropout(p=0.0, inplace=False)
+        (3): Linear(in_features=64, out_features=64, bias=True)
+        (4): ReLU()
+        (5): Dropout(p=0.0, inplace=False)
+        (6): Linear(in_features=64, out_features=2, bias=True)
+        (7): Identity()
+        (8): Dropout(p=0.0, inplace=False)
+      )
+      (postprocess_layer): PartialChargeLayer()
+    )
+  )
+)
+Using 0 GPUs
+
