@@ -1,6 +1,6 @@
 __pycache__/
 *.parquet
-*.ckpt
+
 *.sh
 mlruns/
 *.out
