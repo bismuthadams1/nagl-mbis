@@ -6,4 +6,5 @@ build/
 dist/
 *.egg-info/
 *.cloud
-*.sqlite3*
+*.sqlite*
+*.parquet
