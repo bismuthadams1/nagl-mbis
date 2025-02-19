@@ -16,3 +16,6 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+*.icloud
+*.sqlite*
+*.parquet

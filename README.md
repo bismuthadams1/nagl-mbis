@@ -18,7 +18,7 @@ mamba env create -f devtools/conda-envs/env.yaml
 You will then need to install this package from source, first clone the repository from github:
 
 ```bash
-git clone https://github.com/jthorton/nagl-mbis.git
+git clone https://github.com/kuano-ai/nagl-mbis.git
 cd nagl-mbis
 ```
 
