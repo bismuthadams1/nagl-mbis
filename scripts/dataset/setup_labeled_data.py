@@ -6,7 +6,6 @@ Notes:
     - conformers for molecules are grouped together first
     - try and batch calls to qcarchive for faster processing
     - we use a processpool to speed up calls to qca and builidng the grids.
-<<<<<<< HEAD
 
 Two datasets can currently be accessed:
 
@@ -14,8 +13,6 @@ Two datasets can currently be accessed:
 ----------------------------  ----------
           wb97x-d/def2-tzvpp       68966
 wb97x-d/def2-tzvpp/ddx-water       68966
-=======
->>>>>>> origin/main
 """
 import pyarrow 
 from openff.units import unit
@@ -89,15 +86,11 @@ def main(output: str):
         dataset_name='MLPepper RECAP Optimized Fragments v1.0'
     )
 
-
     # allow grid settings to be defined in a yaml file
-    # grid_settings =  LatticeGridSettings(
-    #     type="fcc", spacing=0.5, inner_vdw_scale=1.4, outer_vdw_scale=2.0
-    # )
-    #try 1A spacing
     grid_settings =  LatticeGridSettings(
-        type="fcc", spacing=1, inner_vdw_scale=1.4, outer_vdw_scale=2.0
+        type="fcc", spacing=0.5, inner_vdw_scale=1.4, outer_vdw_scale=2.0
     )
+ 
     rec_fn = partial(process_record, grid_settings=grid_settings)
 
     # set up the arrow table which we will write to
@@ -121,7 +114,15 @@ def main(output: str):
             # process in 1000 batch chunks
             for batch in batched(entries, 1000):
                 jobs = [
-                    pool.submit(rec_fn, record.dict(), record.molecule) for _, _, record in tqdm(data_set.iterate_records(specification_names=["wb97x-d/def2-tzvpp/ddx-water"], status="complete", entry_names=batch), desc="Building Job list", total=len(batch)) 
+                    pool.submit(rec_fn,
+                        record.dict(),
+                        record.molecule) for _, _, record in tqdm(
+                        data_set.iterate_records(
+                        specification_names=["wb97x-d/def2-tzvpp/ddx-water"],
+                        status="complete",
+                        entry_names=batch),
+                        desc="Building Job list",
+                        total=len(batch)) 
                 ]
                 for result in tqdm(as_completed(jobs), desc="Building local dataset ..."):
                     rec_data = result.result()
@@ -129,12 +130,7 @@ def main(output: str):
                     writer.write_batch(rec_batch)
 
 if __name__ == "__main__":
-    # main(output="test_water.parquet")
-    # main(output="train.parquet")
-    # main(output="validation.parquet")
-    # main(output="./josh_set/mlpepper_gas.parquet")
-    # main(output="./josh_set/mlpepper_gas_grid_esp.parquet")
-    # main(output="./josh_set/15A_grid/mlpepper_water_grid_esp.parquet")
-    main(output="./josh_set/1A_grid/mlpepper_gas_grid_esp.parquet")
+    #an example output.
+    main(output="mlpepper_water_grid_esp.parquet")
 
 

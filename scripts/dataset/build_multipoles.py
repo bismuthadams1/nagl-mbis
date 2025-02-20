@@ -1,6 +1,9 @@
+"""
+Class to build the ESPs from an assigned grid and set of MBIS multipoles. 
+"""
+
 import numpy as np
 from openff.units import unit
-# from memory_profiler import profile
 
 AU_ESP = unit.atomic_unit_of_energy / unit.elementary_charge
 

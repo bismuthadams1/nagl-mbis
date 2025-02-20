@@ -1,3 +1,7 @@
+"""The purpose of this script is to 
+
+
+"""
 import numpy as np
 import pyarrow.parquet as pq
 import pyarrow as pa
