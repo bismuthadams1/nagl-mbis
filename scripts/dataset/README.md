@@ -10,5 +10,5 @@ The should be used in the following order:
 You can use the `analysis_train_val_test_split.py` to analyse the splits in terms of number of elements and heavy atoms. 
 
 The main folder contains all the scripts to create the main dataset - [MLPepper RECAP Optimized Fragments v1.0
-](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-07-26-MLPepper-RECAP-Optimized-Fragments-v1.0). The `add_iodines/` subfolder contains the scripts which added the iodine containing compounds ([MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0
+](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-07-26-MLPepper-RECAP-Optimized-Fragments-v1.0). The `dataset_iodines/` subfolder contains the scripts which added the iodine containing compounds ([MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-10-11-MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0)). 

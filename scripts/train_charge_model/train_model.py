@@ -91,7 +91,7 @@ def configure_data() -> DataConfig:
 
     return DataConfig(
         training=Dataset(
-            sources=["/tank/home/charlie2/isambard_data/default_grids_no_iodines/default_esp_grids/gas/training_esp.parquet"],
+            sources=["./training_esp.parquet"],
             # The 'column' must match one of the label columns in the parquet
             # table that was create during stage 000.
             # The 'readout' column should correspond to one our or model readout
@@ -104,49 +104,28 @@ def configure_data() -> DataConfig:
                     metric="rmse",
                     denominator=0.02,
                 ),
-                DipoleTarget(
-                    metric="rmse",
-                    dipole_column="dipole",
-                    conformation_column="conformation",
-                    charge_label="mbis-charges",
-                    denominator=0.04,
-                ),
             ],
             batch_size=250,
         ),
         validation=Dataset(
-            sources=["/tank/home/charlie2/isambard_data/default_grids_no_iodines/default_esp_grids/gas/validation_esp.parquet"],
+            sources=["./validation_esp.parquet"],
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",
                     readout="mbis-charges",
                     metric="rmse",
                     denominator=0.02,
-                ),
-                DipoleTarget(
-                    metric="rmse",
-                    dipole_column="dipole",
-                    conformation_column="conformation",
-                    charge_label="mbis-charges",
-                    denominator=0.04,
                 ),
             ],
         ),
         test=Dataset(
-            sources=["/tank/home/charlie2/isambard_data/default_grids_no_iodines/default_esp_grids/gas/testing_esp.parquet"],
+            sources=["./testing_esp.parquet"],
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",
                     readout="mbis-charges",
                     metric="rmse",
                     denominator=0.02,
-                ),
-                DipoleTarget(
-                    metric="rmse",
-                    dipole_column="dipole",
-                    conformation_column="conformation",
-                    charge_label="mbis-charges",
-                    denominator=0.04,
                 ),
             ],
         ),
@@ -185,7 +164,7 @@ def main():
     config = Config(model=model_config, data=data_config, optimizer=optimizer_config)
 
     model = DGLMoleculeLightningModel(config)
-    model.to_yaml("charge-dipole-v1.yaml")
+    model.to_yaml("charge-v1.yaml")
     print("Model", model)
 
     # The 'cache_dir' will store the fully featurized molecules so we don't need to
@@ -196,7 +175,7 @@ def main():
     # Will include the usual statistics as well as useful artifacts highlighting
     # the models weak spots.
     logger = MLFlowLogger(
-        experiment_name="mbis-charge-dipole-model-small-mols-1000",
+        experiment_name="mbis-charge-model-small-mols-1000",
         save_dir=str(output_dir / "mlruns"),
         log_model="all",
     )

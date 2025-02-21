@@ -87,11 +87,11 @@ def configure_model(
 
 def configure_data() -> DataConfig:
     from openff.units import unit
-    KE = (1 / (4 * numpy.pi * unit.epsilon_0)).m
+    KE = 1
 
     return DataConfig(
         training=Dataset(
-            sources=["./training_15A.parquet"],
+            sources=["./training_esp.parquet"],
             # The 'column' must match one of the label columns in the parquet
             # table that was create during stage 000.
             # The 'readout' column should correspond to one our or model readout
@@ -111,20 +111,11 @@ def configure_data() -> DataConfig:
                     charge_label="mbis-charges",
                     denominator=0.04,
                 ),
-                ESPTarget(
-                    esp_column="esp",
-                    charge_label="mbis-charges",
-                    inv_distance_column="inv_distance",
-                    metric="rmse",
-                    esp_length_column="esp_length",
-                    ke = KE,
-                    denominator = 0.00159362,  #1kcal/mol =  0.001 593 62 hartrees
-                ),
             ],
             batch_size=250,
         ),
         validation=Dataset(
-            sources=["./validation_15A.parquet"],
+            sources=["./validation_esp.parquet"],
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",
@@ -138,20 +129,11 @@ def configure_data() -> DataConfig:
                     conformation_column="conformation",
                     charge_label="mbis-charges",
                     denominator=0.04,
-                ),
-                ESPTarget(
-                    esp_column="esp",
-                    charge_label="mbis-charges",
-                    inv_distance_column="inv_distance",
-                    metric="rmse",
-                    esp_length_column="esp_length",
-                    ke = KE,
-                    denominator = 0.00159362,  #1kcal/mol =  0.001 593 62 hartrees
                 ),
             ],
         ),
         test=Dataset(
-            sources=["./testing_15A.parquet"],
+            sources=["./testing_esp.parquet"],
             targets=[
                 ReadoutTarget(
                     column="mbis-charges",
@@ -165,15 +147,6 @@ def configure_data() -> DataConfig:
                     conformation_column="conformation",
                     charge_label="mbis-charges",
                     denominator=0.04,
-                ),
-                ESPTarget(
-                    esp_column="esp",
-                    charge_label="mbis-charges",
-                    inv_distance_column="inv_distance",
-                    metric="rmse",
-                    esp_length_column="esp_length",
-                    ke = KE,
-                    denominator = 0.00159362,  #1kcal/mol =  0.001 593 62 hartrees
                 ),
             ],
         ),
@@ -235,7 +208,7 @@ def main():
     #
 
     # Train the model
-    n_epochs = 1
+    n_epochs = 1000
 
     n_gpus = 0 if not torch.cuda.is_available() else 1
     print(f"Using {n_gpus} GPUs")
@@ -244,8 +217,8 @@ def main():
         monitor="val/loss", dirpath=output_dir.joinpath("")
     )
     trainer = pl.Trainer(
-        accelerator="cpu",
-        # devices=n_gpus,
+        accelerator="gpu",
+        devices=n_gpus,
         min_epochs=n_epochs,
         max_epochs=n_epochs,
         logger=logger,

@@ -118,7 +118,7 @@ def main(output: str):
                         record.dict(),
                         record.molecule) for _, _, record in tqdm(
                         data_set.iterate_records(
-                        specification_names=["wb97x-d/def2-tzvpp/ddx-water"],
+                        specification_names=["wb97x-d/def2-tzvpp/ddx-water"],  #CHANGE THIS LINE TO BUILD WATER/GAS MODELS
                         status="complete",
                         entry_names=batch),
                         desc="Building Job list",
