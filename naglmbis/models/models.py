@@ -17,9 +17,7 @@ charge_weights = {
     "nagl-gas-esp-wb-2A": {"checkpoint_path":"nagl-gas-esp-2A.ckpt"},
     "nagl-gas-esp-wb-15A":{"checkpoint_path": "nagl-gas-esp-15A.ckpt"},
 }
-# volume_weights = {
-#     "nagl-v1": {"path": "mbis_volumes_v1.ckpt", "model": MBISGraphModel}
-# }
+
 CHARGE_MODELS = Literal["nagl-v1-mbis-dipole",
                         "nagl-v1-mbis",
                         "nagl-gas-charge-wb",
@@ -31,7 +29,6 @@ CHARGE_MODELS = Literal["nagl-v1-mbis-dipole",
                         "nagl-gas-esp-wb-2A",
                         "nagl-gas-esp-wb-15A",
                         ]
-# VOLUME_MODELS = Literal["nagl-v1"]
 
 
 def load_charge_model(charge_model: CHARGE_MODELS) -> MBISGraphModel:

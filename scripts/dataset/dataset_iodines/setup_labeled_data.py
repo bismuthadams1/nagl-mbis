@@ -53,6 +53,7 @@ def process_record(record, molecule, grid_settings: GridSettingsType) -> dict:
     #build the grid and inv the distance between the grid coords and points
     # build the molecule with its conformer attached
     openff_mol: Molecule = Molecule.from_qcschema(molecule, allow_undefined_stereo=True)
+    #The conformer is stored in angstrom
     grid_coords = build_grid(molecule = openff_mol,
             conformer=openff_mol.conformers[0],
             grid_settings=grid_settings)
@@ -74,7 +75,7 @@ def process_record(record, molecule, grid_settings: GridSettingsType) -> dict:
         grid=grid_coords,
         coordinates=openff_mol.conformers[0],
     )
-    record_data["esp"] = esp.tolist()
+    record_data["esp"] = esp
     return record_data
 
 def main(output: str):
@@ -85,12 +86,17 @@ def main(output: str):
         dataset_type='singlepoint',
         dataset_name='MLPepper RECAP Optimized Fragments v1.0'
     )
+    
+    iodine_data_set = client.get_dataset(
+        dataset_type='singlepoint',
+        dataset_name='MLPepper RECAP Optimized Fragments v1.0 Add Iodines'
+    )
 
     # allow grid settings to be defined in a yaml file
     grid_settings =  LatticeGridSettings(
         type="fcc", spacing=0.5, inner_vdw_scale=1.4, outer_vdw_scale=2.0
     )
- 
+
     rec_fn = partial(process_record, grid_settings=grid_settings)
 
     # set up the arrow table which we will write to
@@ -108,29 +114,34 @@ def main(output: str):
             pyarrow.field('grid', pyarrow.list_(pyarrow.float64())),
         ])
     entries = data_set.entry_names
+    entries_iodine = iodine_data_set.entry_names
     with pyarrow.parquet.ParquetWriter(where=output, schema=schema) as writer:
          
         with ProcessPoolExecutor(max_workers=16) as pool:
             # process in 1000 batch chunks
             for batch in batched(entries, 1000):
                 jobs = [
-                    pool.submit(rec_fn,
-                        record.dict(),
-                        record.molecule) for _, _, record in tqdm(
-                        data_set.iterate_records(
-                        specification_names=["wb97x-d/def2-tzvpp/ddx-water"],  #CHANGE THIS LINE TO BUILD WATER/GAS MODELS
-                        status="complete",
-                        entry_names=batch),
-                        desc="Building Job list",
-                        total=len(batch)) 
+                    pool.submit(rec_fn, record.dict(), record.molecule) for _, _, record in tqdm(data_set.iterate_records(specification_names=["wb97x-d/def2-tzvpp"], status="complete", entry_names=batch), desc="Building Job list", total=len(batch)) 
                 ]
                 for result in tqdm(as_completed(jobs), desc="Building local dataset ..."):
                     rec_data = result.result()
                     rec_batch = pyarrow.RecordBatch.from_pylist([rec_data,], schema=schema)
                     writer.write_batch(rec_batch)
+            
+        with ProcessPoolExecutor(max_workers=16) as pool:
+                # process in 1000 batch chunks
+                for batch in batched(entries_iodine, 1000):
+                    jobs = [
+                        pool.submit(rec_fn, record.dict(), record.molecule) for _, _, record in tqdm(iodine_data_set.iterate_records(specification_names=["wb97x-d/def2-tzvpp"], status="complete", entry_names=batch), desc="Building Job list", total=len(batch)) 
+                    ]
+                    for result in tqdm(as_completed(jobs), desc="Building local dataset ..."):
+                        rec_data = result.result()
+                        rec_batch = pyarrow.RecordBatch.from_pylist([rec_data,], schema=schema)
+                        writer.write_batch(rec_batch)
 
 if __name__ == "__main__":
-    #an example output.
-    main(output="mlpepper_water_grid_esp.parquet")
+
+    # main(output="/home/mlpepper/bismuthadams.mlpepper/repos/nagl-mbis-release-for-training/nagl-mbis/scripts/dataset_iodines/esp_set/default_grid_iodines_water.parquet")
+    main(output="/mnt/storage/nobackup/nca121/test_data_sets/gas/default_grid_iodines_gas.parquet")
 
 
