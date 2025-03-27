@@ -50,16 +50,15 @@ from openff.toolkit.topology import Molecule
 
 # create ethanol
 ethanol = Molecule.from_smiles("CCO")
-# predict the charges (in e) and atomic volumes in (bohr ^3)
+# predict the charges (in e)
 charges = charge_model.compute_properties(ethanol.to_rdkit())["mbis-charges"]
-volumes = charge_model_2.compute_properties(ethanol.to_rdkit())["mbis-volumes"]
 ```
 
 For computing partially polarised charges, we can use the class ComputePartialPolarised
 
 ```python
 from openff.toolkit.topology import Molecule
-from naglmbis.models import ComputePartialPolarised
+from naglmbis.models.base_model import ComputePartialPolarised
 from naglmbis.models import load_charge_model
 
 gas_model = load_charge_model(charge_model="nagl-gas-charge-dipole-wb")
@@ -78,25 +77,27 @@ polarised_model.compute_polarised_charges(ethanol.to_rdkit())
 
 To use the charges in a simulation, we first create an Interchange object (following on from above):
 ```
+from openff.toolkit import Quantity, unit
+
 charges = polarised_model.compute_polarised_charges(ethanol.to_rdkit())
 
 # Convert the charges to a 1D numpy array
 charges = charges.detach().numpy().astype(float).squeeze()
 
 # Assign the charges to the molecule and normalise them
-molecule.partial_charges = Quantity(
+ethanol.partial_charges = Quantity(
             charges,
             unit.elementary_charge,
         )
-molecule._normalize_partial_charges()
+ethanol._normalize_partial_charges()
 ```
-Now, create the interchange object. Note that the charge_from_molecules argument is critical, otherwise we'll end up with AM1-BCC charges.
+Now, create the interchange object. Note that the charge_from_molecules argument is critical, otherwise we'll end up with AM1-BCC charges. Also note that you will need to install `openff-interchange` e.g. `mamba install -c conda-forge openff-interchange`.
 ```
 from openff.toolkit import ForceField
 from openff.interchange import Interchange
 
 force_field = ForceField("openff-2.2.1.offxml")
-interchange = Interchange.from_smirnoff(force_field=force_field, topology=topology, charge_from_molecules=[molecule])
+interchange = Interchange.from_smirnoff(force_field=force_field, topology=topology, charge_from_molecules=[ethanol])
 ```
 You can then run a simulation with your engine of chioce, for example with OpenMM as shown [here](https://docs.openforcefield.org/en/latest/examples/openforcefield/openff-interchange/ligand_in_water/ligand_in_water.html).
 
