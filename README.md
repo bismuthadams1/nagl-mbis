@@ -59,7 +59,7 @@ For computing partially polarised charges, we can use the class ComputePartialPo
 
 ```python
 from openff.toolkit.topology import Molecule
-from naglbmis.models import ComputePartialPolarised
+from naglmbis.models import ComputePartialPolarised
 from naglmbis.models import load_charge_model
 
 gas_model = load_charge_model(charge_model="nagl-gas-charge-dipole-wb")
@@ -71,7 +71,7 @@ polarised_model = ComputePartialPolarised(
    alpha = 0.5 #scaling parameter which can be adjusted
 )
 
-polarised_model.compute_properties(ethanol.to_rdkit())
+polarised_model.compute_polarised_charges(ethanol.to_rdkit())
 ```
 
 
