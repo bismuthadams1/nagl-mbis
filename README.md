@@ -74,23 +74,31 @@ polarised_model = ComputePartialPolarised(
 polarised_model.compute_polarised_charges(ethanol.to_rdkit())
 ```
 
+## Using the charges in a simulation
 
-# This is currently broken, due to plugins changing in the openff stack!
-Alternatively we provide an openff-toolkit parameter handler plugin which allows you to create an openmm system
-using the normal python pathway with a modified force field which requests that the ``NAGMBIS`` model be used to 
-predict charges and LJ parameters. We provide a function which can modify any offxml to add the custom handler
-
-```python
-from naglmbis.plugins import modify_force_field
-from openff.toolkit.topology import Molecule
-
-nagl_sage = modify_force_field(force_field="openff_unconstrained-2.0.0.offxml")
-# write out the force field to file
-nagl_sage.to_file("nagl_sage.offxml")
-# or use it to create an openmm system
-methanol = Molecule.from_smiles("CO")
-openmm_system = nagl_sage.create_openmm_system(topology=methanol.to_topology())
+To use the charges in a simulation, we first create an Interchange object (following on from above):
 ```
+charges = polarised_model.compute_polarised_charges(ethanol.to_rdkit())
+
+# Convert the charges to a 1D numpy array
+charges = charges.detach().numpy().astype(float).squeeze()
+
+# Assign the charges to the molecule and normalise them
+molecule.partial_charges = Quantity(
+            charges,
+            unit.elementary_charge,
+        )
+molecule._normalize_partial_charges()
+```
+Now, create the interchange object. Note that the charge_from_molecules argument is critical, otherwise we'll end up with AM1-BCC charges.
+```
+from openff.toolkit import ForceField
+from openff.interchange import Interchange
+
+force_field = ForceField("openff-2.2.1.offxml")
+interchange = Interchange.from_smirnoff(force_field=force_field, topology=topology, charge_from_molecules=[molecule])
+```
+You can then run a simulation with your engine of chioce, for example with OpenMM as shown [here](https://docs.openforcefield.org/en/latest/examples/openforcefield/openff-interchange/ligand_in_water/ligand_in_water.html).
 
 # Models
 
