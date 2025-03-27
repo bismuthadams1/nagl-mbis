@@ -2,7 +2,10 @@ from typing import Literal
 
 import torch
 from nagl.features import AtomFeature, one_hot_encode, register_atom_feature
-from pydantic import Extra, Field, dataclasses
+try:
+    from pydantic.v1 import Extra, Field, dataclasses
+except ImportError:
+    from pydantic import Extra, Field, dataclasses
 from rdkit import Chem
 
 
