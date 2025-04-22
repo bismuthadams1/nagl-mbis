@@ -21,7 +21,10 @@ from nagl.training import DGLMoleculeDataModule, DGLMoleculeLightningModel
 import typing
 import logging
 import pathlib
-import pydantic
+try:
+    import pydantic.v1 as pydantic
+except ImportError:
+    import pydantic
 from rdkit import Chem
 import dataclasses
 
