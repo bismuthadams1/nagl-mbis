@@ -4,7 +4,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![codecov](https://codecov.io/gh/jthorton/nagl-mbis/branch/main/graph/badge.svg?token=LI1hLoCxZK)](https://codecov.io/gh/jthorton/nagl-mbis)
 
-A collection of models to predict conformation independent MBIS charges and volumes of molecules, built on the [NAGL](https://github.com/SimonBoothroyd/nagl)
+A collection of models to predict conformation independent MBIS atom-centred charges for molecules, built on the [NAGL](https://github.com/SimonBoothroyd/nagl)
 package by SimonBoothroyd.
 
 ## Installation
@@ -22,14 +22,14 @@ git clone https://github.com/bismuthadams1/nagl-mbis.git
 cd nagl-mbis
 ```
 
-With the nagl environment activate install the models via:
+With the nagl environment activated install the models via:
 
 ```bash
 pip install -e . --no-build-isolation 
 ```
 
 ## Quick start
-NAGL-MBIS offers a large number of pre-trained models to compute conformation independent MBIS charges, these can be loaded
+NAGL-MBIS offers a number of pre-trained models to compute conformation-independent MBIS charges, these can be loaded
 using the following code in a script
 
 ```python
@@ -41,9 +41,9 @@ charge_model = load_charge_model(charge_model="nagl-gas-charge-wb")
 charge_model_2 = load_charge_model(charge_model="nagl-gas-charge-dipole-wb")
 ```
 
-A list of the available models can be found in naglmbis/modls/models.py
+A list of the available models can be found in naglmbis/models/models.py
 
-we can then use these models to predict the corresponding properties for a given [openff-toolkit](https://github.com/openforcefield/openff-toolkit) [Molecule object](https://docs.openforcefield.org/projects/toolkit/en/stable/users/molecule_cookbook.html#cookbook-every-way-to-make-a-molecule) or rdkit `Chem.Mol`.
+We can then use these models to predict the corresponding properties for a given [openff-toolkit](https://github.com/openforcefield/openff-toolkit) [Molecule object](https://docs.openforcefield.org/projects/toolkit/en/stable/users/molecule_cookbook.html#cookbook-every-way-to-make-a-molecule) or rdkit `Chem.Mol`.
 
 ```python
 from openff.toolkit.topology import Molecule
@@ -61,8 +61,8 @@ from openff.toolkit.topology import Molecule
 from naglmbis.models.base_model import ComputePartialPolarised
 from naglmbis.models import load_charge_model
 
-gas_model = load_charge_model(charge_model="nagl-gas-charge-dipole-wb")
-water_model = load_charge_model(charge_model="nagl-gas-charge-dipole-wb")
+gas_model = load_charge_model(charge_model="nagl-gas-charge-dipole-esp-wb-default")
+water_model = load_charge_model(charge_model="nagl-water-charge-dipole-esp-wb-default")
 
 polarised_model = ComputePartialPolarised(
    model_gas = gas_model,
@@ -70,7 +70,8 @@ polarised_model = ComputePartialPolarised(
    alpha = 0.5 #scaling parameter which can be adjusted
 )
 
-polarised_model.compute_polarised_charges(ethanol.to_rdkit())
+partial_charges = polarised_model.compute_polarised_charges(ethanol.to_rdkit())
+print(partial_charges)
 ```
 
 ## Using the charges in a simulation
@@ -91,13 +92,14 @@ ethanol.partial_charges = Quantity(
         )
 ethanol._normalize_partial_charges()
 ```
-Now, create the interchange object. Note that the charge_from_molecules argument is critical, otherwise we'll end up with AM1-BCC charges. Also note that you will need to install `openff-interchange` e.g. `mamba install -c conda-forge openff-interchange`.
+Now, create the interchange object. Note that the charge_from_molecules argument is critical, otherwise we'll end up with AM1-BCC charges. Also note that you will need to install [openff-interchange](https://github.com/openforcefield/openff-interchange) e.g. `mamba install -c conda-forge openff-interchange`.
 ```
 from openff.toolkit import ForceField
 from openff.interchange import Interchange
 
 force_field = ForceField("openff-2.2.1.offxml")
-interchange = Interchange.from_smirnoff(force_field=force_field, topology=topology, charge_from_molecules=[ethanol])
+interchange = Interchange.from_smirnoff(force_field=force_field, topology=[ethanol], charge_from_molecules=[ethanol])
+print(ethanol.partial_charges)
 ```
 You can then run a simulation with your engine of chioce, for example with OpenMM as shown [here](https://docs.openforcefield.org/en/latest/examples/openforcefield/openff-interchange/ligand_in_water/ligand_in_water.html).
 
@@ -132,10 +134,10 @@ These models were trained on the [MLPepper RECAP Optimized Fragments v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-07-26-MLPepper-RECAP-Optimized-Fragments-v1.0) and [MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-10-11-MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0) datasets.
 
-These models were computed using wB79X-d/def2-TZPP with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
+These models were computed using wB79X-d/def2-TZVPP with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
 
 ## Training
 
-The training scripts are localed in the scripts subfolder in this repo. This is split into further subfolders.
+The training scripts are located in the scripts subfolder in this repo. This is split into further subfolders.
 
-1. **dataset** -  this subfolder contains all the scripts to pull down the QM data from qcarchive, 
+1. **dataset** -  this subfolder contains all the scripts to pull down the QM data from qcarchive.
