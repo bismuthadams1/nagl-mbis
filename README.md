@@ -125,7 +125,7 @@ For brevity:
 | `nagl-gas-charge-wb`             | Q                  | ωB97X-D/def2-TZVPP - MBIS Charges| gas    |
 | `nagl-gas-charge-dipole-wb`      | Q, $\mu$          | ωB97X-D/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
 | `nagl-gas-charge-dipole-esp-wb-default`   | Q, $\mu$, V | ωB97X-D/def2-TZVPP- MBIS Charges, QM Dipoles, ESP rebuilt to  1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole| gas    |
-| `nagl-water-charge-wb`           |  Q   | ωB97X-D/def2-TZVPP/def2-TZVPP - MBIS Charges   | water    |
+| `nagl-water-charge-wb`           |  Q   | ωB97X-D/def2-TZVPP - MBIS Charges   | water    |
 | `nagl-water-charge-dipole-wb`  | Q, $\mu$      | ωB97X-D/def2-TZVPP- MBIS Charges, QM Dipoles| water  |
 | `nagl-water-charge-dipole-esp-wb-default` | Q, $\mu$, V | ωB97X-D/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole | water |
 | `nagl-gas-esp-wb-2A`            |Q, $\mu$, V | ωB97X-D/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 2Å spacing grid up to MBIS Quadrupole        | water    |
