@@ -122,7 +122,7 @@ For brevity:
 |--------------------------------|--------------------|--------------------------|-------------|
 | `nagl-v1-mbis`                   | Q                  | HF/6-31G* - MBIS Charges |      gas
 | `nagl-v1-mbis-dipole`            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
-| `nagl-gas-charge-wb`             | Q                  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges| gas    |
+| `nagl-gas-charge-wb`             | Q                  | $\omega\text{B97X-D}$/def2-TZVPP - MBIS Charges| gas    |
 | `nagl-gas-charge-dipole-wb`      | Q, $\mu$          | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
 | `nagl-gas-charge-dipole-esp-wb-default`   | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to  1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole| gas    |
 | `nagl-water-charge-wb`           |  Q   | $\omega$ B79X-d/def2-TZVPP - MBIS Charges   | water    |
