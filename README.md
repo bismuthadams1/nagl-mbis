@@ -115,8 +115,8 @@ The available charges are, for brievity Q = on-atom charges, $\mu$ = dipole, and
 |--------------------------------|--------------------|--------------------------|-------------|
 | nagl-v1-mbis                   | Q                  | HF/6-31G* - MBIS Charges |      gas
 | nagl-v1-mbis-dipole            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
-| nagl-gas-charge-wb             | Q                  | $\omega$~B79X-d/def2-TZVPP - MBIS Charges| gas    |
-| nagl-gas-charge-dipole-wb      | Q, $\mu$          | $\omega$~B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
+| nagl-gas-charge-wb             | Q                  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges| gas    |
+| nagl-gas-charge-dipole-wb      | Q, $\mu$          | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
 | nagl-gas-charge-dipole-esp-wb-default   | Q, $\mu$, V | $\omega$~B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 0.5$\Angstrom$ spacing| naglmbis    |
 | MBIS WB Water Charge           | on-atom charges    | MBIS_WB_WATER_CHARGE     | naglmbis    |
 | MBIS WB Water Charge + Dipole  | on-atom charges    | MBIS_WB_WATER_CHARGE_DIPOLE| naglmbis  |
