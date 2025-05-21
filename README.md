@@ -117,12 +117,12 @@ The available charges are, for brievity Q = on-atom charges, $\mu$ = dipole, and
 | nagl-v1-mbis-dipole            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
 | nagl-gas-charge-wb             | Q                  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges| gas    |
 | nagl-gas-charge-dipole-wb      | Q, $\mu$          | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
-| nagl-gas-charge-dipole-esp-wb-default   | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 0.5$\Angstrom$ spacing| gas    |
-| nagl-water-charge-wb           |  Q   | \omega$ B79X-d/def2-TZVPP - MBIS Charges   | water    |
+| nagl-gas-charge-dipole-esp-wb-default   | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 0.5 $\Angstrom$ spacing| gas    |
+| nagl-water-charge-wb           |  Q   | ¢\omega$ B79X-d/def2-TZVPP - MBIS Charges   | water    |
 | nagl-water-charge-dipole-wb  | Q, $\mu$      | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles| water  |
-| nagl-water-charge-dipole-esp-wb-default | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 0.5$\Angstrom$ spacing | water |
-| nagl-gas-esp-wb-2A            |Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 2$\Angstrom$ spacing        | water    |
-| nagl-gas-esp-wb-15A           | Q, $\mu$, V  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 1.5$\Angstrom$ spacing       | water    |
+| nagl-water-charge-dipole-esp-wb-default | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 0.5 $\Angstrom$ spacing | water |
+| nagl-gas-esp-wb-2A            |Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 2 $\Angstrom$ spacing        | water    |
+| nagl-gas-esp-wb-15A           | Q, $\mu$, V  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 1.5 $\Angstrom$ spacing       | water    |
 
 
 ## MBISGraphMode
