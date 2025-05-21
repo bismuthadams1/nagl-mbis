@@ -105,6 +105,26 @@ You can then run a simulation with your engine of chioce, for example with OpenM
 
 # Models
 
+## Summary of Models
+
+## Available Models
+
+The available charges are, for brievity Q = on-atom charges, $\mu$ = dipole, and V = electrostatic potential:
+
+| Model                          | Objective          | Level of Theory of Training | Phase |
+|--------------------------------|--------------------|--------------------------|-------------|
+| nagl-v1-mbis                   | Q                  | HF/6-31G* - MBIS Charges |      gas
+| nagl-v1-mbis-dipole            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
+| nagl-gas-charge-wb             | Q                  | $\omega$B79X-d/def2-TZVPP - MBIS Charges| gas    |
+| nagl-gas-charge-dipole-wb      | Q, $\mu$          | $\omega$B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
+| nagl-gas-charge-dipole-esp-wb-default   | Q, $\mu$, V | $\omega$B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0$\times$VdW with 0.5$\Angstrom$ spacing| naglmbis    |
+| MBIS WB Water Charge           | on-atom charges    | MBIS_WB_WATER_CHARGE     | naglmbis    |
+| MBIS WB Water Charge + Dipole  | on-atom charges    | MBIS_WB_WATER_CHARGE_DIPOLE| naglmbis  |
+| MBIS WB Water Charge + Dipole + ESP | on-atom charges | MBIS_WB_WATER_CHARGE_DIPOLE_ESP| naglmbis |
+| MBIS WB Gas ESP 2A             |on-atom charges  ESP | MBIS_WB_GAS_ESP_2A       | naglmbis    |
+| MBIS WB Gas ESP 15A            | on-atom charges  | MBIS_WB_GAS_ESP_15A      | naglmbis    |
+| MBIS WB Gas ESP Default        | on-atom charges  | MBIS_WB_GAS_ESP_DEFAULT  | naglmbis    |
+
 ## MBISGraphMode
 
 This model uses a minimal set of basic atomic features including
@@ -134,7 +154,7 @@ These models were trained on the [MLPepper RECAP Optimized Fragments v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-07-26-MLPepper-RECAP-Optimized-Fragments-v1.0) and [MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-10-11-MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0) datasets.
 
-These models were computed using wB79X-d/def2-TZVPP with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
+These models were computed using  $\omega$B79X-d/def2-TZVPP with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
 
 ## Training
 
