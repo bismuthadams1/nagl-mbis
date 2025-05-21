@@ -107,22 +107,30 @@ You can then run a simulation with your engine of chioce, for example with OpenM
 
 ## Summary of Models
 
-## Available Models
+This repository includes several partial charge models. The table below summarizes each model’s training objectives, the level of theory used for the training data (see details below), and the phase (gas or water) in which the QM data was calculated.
 
-The available charges are, for brievity Q = on-atom charges, $\mu$ = dipole, and V = electrostatic potential:
+For brevity:
 
-| Model                          | Objective          | Level of Theory of Training Set | Phase |
+.Q = on-atom charges
+
+.μ = dipole moment
+
+.V = electrostatic potential (ESP)
+
+
+
+| Model                          | Training Objective          | Level of Theory of Training Set | Phase |
 |--------------------------------|--------------------|--------------------------|-------------|
-| nagl-v1-mbis                   | Q                  | HF/6-31G* - MBIS Charges |      gas
-| nagl-v1-mbis-dipole            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
-| nagl-gas-charge-wb             | Q                  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges| gas    |
-| nagl-gas-charge-dipole-wb      | Q, $\mu$          | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
-| nagl-gas-charge-dipole-esp-wb-default   | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to  1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole| gas    |
-| nagl-water-charge-wb           |  Q   | $\omega$ B79X-d/def2-TZVPP - MBIS Charges   | water    |
-| nagl-water-charge-dipole-wb  | Q, $\mu$      | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles| water  |
-| nagl-water-charge-dipole-esp-wb-default | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole | water |
-| nagl-gas-esp-wb-2A            |Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 2Å spacing grid up to MBIS Quadrupole        | water    |
-| nagl-gas-esp-wb-15A           | Q, $\mu$, V  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 1.5Å spacing grid up to MBIS Quadrupole       | water    |
+| `nagl-v1-mbis`                   | Q                  | HF/6-31G* - MBIS Charges |      gas
+| `nagl-v1-mbis-dipole`            | Q, $\mu$           | HF/6-31G* - MBIS Charges | gas    |
+| `nagl-gas-charge-wb`             | Q                  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges| gas    |
+| `nagl-gas-charge-dipole-wb`      | Q, $\mu$          | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles     | gas    |
+| `nagl-gas-charge-dipole-esp-wb-default`   | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to  1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole| gas    |
+| `nagl-water-charge-wb`           |  Q   | $\omega$ B79X-d/def2-TZVPP - MBIS Charges   | water    |
+| `nagl-water-charge-dipole-wb`  | Q, $\mu$      | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles| water  |
+| `nagl-water-charge-dipole-esp-wb-default` | Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 0.5Å spacing grid up to MBIS Quadrupole | water |
+| `nagl-gas-esp-wb-2A`            |Q, $\mu$, V | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 2Å spacing grid up to MBIS Quadrupole        | water    |
+| `nagl-gas-esp-wb-15A`           | Q, $\mu$, V  | $\omega$ B79X-d/def2-TZVPP - MBIS Charges, QM Dipoles, ESP rebuilt to 1.4-2.0 $\times$ VdW with 1.5Å spacing grid up to MBIS Quadrupole       | water    |
 
 
 ## MBISGraphMode
