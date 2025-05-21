@@ -108,14 +108,13 @@ You can then run a simulation with your engine of chioce, for example with OpenM
 ## Summary of Models
 
 This repository includes several partial charge models. The table below summarizes each model’s training objectives, the level of theory used for the training data (see details below), and the phase (gas or water) in which the QM data was calculated.
-
 For brevity:
 
-.Q = on-atom charges
+*Q = on-atom charges
 
-.μ = dipole moment
+*μ = dipole moment
 
-.V = electrostatic potential (ESP)
+*V = electrostatic potential (ESP)
 
 
 
