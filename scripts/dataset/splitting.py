@@ -16,7 +16,7 @@ def create_parquet(parquet_dataset: pyarrow.Table, deep_chem_dataset: dc.data.Di
 
 if __name__ == "__main__":
     # load the ref dataset to split
-    ref_dataset = pyarrow.parquet.read_table("/home/mlpepper/bismuthadams.mlpepper/repos/nagl-mbis-release-for-training/nagl-mbis/scripts/dataset/josh_set/15A_grid/mlpepper_water_grid_esp.parquet")
+    ref_dataset = pyarrow.parquet.read_table("./data.parquet")
 
     for deep_dataset, file_name in [
         ("maxmin-train", "training_15A.parquet"),
