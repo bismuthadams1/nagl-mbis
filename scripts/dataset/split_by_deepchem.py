@@ -4,7 +4,10 @@ import numpy as np
 from collections import defaultdict
 from qcportal import PortalClient
 from rdkit import Chem, DataStructs, SimDivFilters
+from rdkit.Chem import rdMolDescriptors 
 import json
+import os
+from tqdm import tqdm
 
 RANDOM_SEED = 42
 
@@ -20,11 +23,14 @@ dataset_keys = []
 smiles_ids = []
 smiles_id_dict = defaultdict(list)
 
-for _, _, singlepoint in data_set.iterate_records(status='complete'):
+#multiprocessing might be faster here if the dataset is large
+print('iterating through records')
+for _, _, singlepoint in tqdm(data_set.iterate_records(status='complete')):
+    # skip water calculations for now
     if 'ddx' in singlepoint.specification.keywords:
         continue
     smiles = singlepoint.molecule.identifiers.canonical_isomeric_explicit_hydrogen_mapped_smiles
-    print(smiles)
+    # print(smiles)
     smiles_id_dict[smiles].append(singlepoint.id)
     if smiles not in smiles_ids:
         smiles_ids.append(smiles)
@@ -38,17 +44,16 @@ print('making fingeprints')
 fingerprints = []
 for smi in smiles_ids:
     mol = Chem.MolFromSmiles(smi)
-    fp = SimDivFilters.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
-    arr = np.zeros((1,), dtype=np.int8)
-    DataStructs.ConvertToNumpyArray(fp, arr)
-    fingerprints.append(arr)
+    fp = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024, useChirality=True)
+    fingerprints.append(fp)
 
 indices = np.arange(len(fingerprints))
 #https://www.rdkit.org/docs/source/rdkit.SimDivFilters.rdSimDivPickers.html#rdkit.SimDivFilters.rdSimDivPickers.MaxMinPicker.LazyBitVectorPick
 test_indices = maxminpicker.LazyBitVectorPick(
     fingerprints, 
     len(fingerprints), 
-    int(0.2*len(fingerprints)), seed=RANDOM_SEED
+    int(0.2*len(fingerprints)), 
+    seed=RANDOM_SEED
 )  
 remaining_indices = list(set(indices) - set(test_indices))
 validation_indices = maxminpicker.LazyBitVectorPick(
@@ -72,28 +77,3 @@ with open('maxmin-valid.json', 'w') as f:
     json.dump(validation_dict, f, indent=4)
 with open('maxmin-train.json', 'w') as f:           
     json.dump(train_dict, f, indent=4)
-
-
-
-
-# print(f"The total number of unique molecules {len(smiles_ids)}")
-# print("Running MaxMin Splitter ...")
-# print('smiles id list')
-# print(smiles_ids)
-# print('smiles set')
-# print(set(smiles_ids))
-# xs = np.array(dataset_keys)
-# print(xs)
-# total_dataset = dc.data.DiskDataset.from_numpy(X=xs, ids=smiles_ids)
-
-# max_min_split = dc.splits.MaxMinSplitter()
-# train, validation, test = max_min_split.train_valid_test_split(
-#     total_dataset,
-#     train_dir="maxmin-train",
-#     valid_dir="maxmin-valid",
-#     test_dir="maxmin-test",
-# )
-
-# # train.to_csv('train_smiles.csv')
-# # validation.to_csv('validation_smiles.csv')
-# # test.to_csv('test_smiles.csv')
