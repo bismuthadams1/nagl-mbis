@@ -158,7 +158,7 @@ These models were trained on the [MLPepper RECAP Optimized Fragments v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-07-26-MLPepper-RECAP-Optimized-Fragments-v1.0) and [MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0
 ](https://github.com/openforcefield/qca-dataset-submission/tree/master/submissions/2024-10-11-MLPepper-RECAP-Optimized-Fragments-Add-Iodines-v1.0) datasets.
 
-These models were computed using  $\omega$~B79X-d/def2-TZVPP with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
+These models were computed using $\omega\text{B97X-D/def2-TZVPP}$ with PSI4 and was split 80:10:10 using the deepchem maxmin spliter.   
 
 ## Training
 
